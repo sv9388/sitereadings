@@ -1,0 +1,55 @@
+\c siter;
+drop table reading;
+drop table device;
+create table device (
+  id serial PRIMARY KEY,
+  device_id varchar(10)  NOT NULL
+);
+
+create table reading (
+  id serial PRIMARY KEY,
+  rdate timestamp unique not null,
+  input_voltage_l1 float not null,
+  input_voltage_l2 float not null,
+  input_voltage_l3 float not null,
+  output_voltage float not null,
+  current_l1 float not null,
+  current_l2 float not null,
+  current_l3 float not null,
+  pf_l1 float not null,
+  pf_l2 float not null,
+  pf_l3 float not null,
+  power_l1 float not null,
+  power_l2 float not null,
+  power_l3 float not null,
+  total_power_kw float not null,
+  total_kwh float not null,
+  window2_consumption float not null,
+  today_saved float not null,
+  today_consumption float not null,
+  yesterday_saved float not null,
+  yesterday_consumption float not null,
+  weekly_saved float not null,
+  weekly_consumption float not null,
+  last_week_saved float not null,
+  last_week_consumption float not null,
+  monthly_saved float not null,
+  monthly_consumption float not null,
+  last_month_saved float not null,
+  last_month_consumption float not null,
+  yearly_saved float not null,
+  yearly_consumption float not null,
+  last_year_saved float not null,
+  last_year_consumption float not null,
+  over_load_indication float not null,
+  missing_phase_indication float not null,
+  over_temperature_indication float not null,
+  temperature_l1 float not null,
+  temperature_l2 float not null,
+  temperature_l3 float not null,
+  cpu_temperature float not null,
+  device_mode float not null,
+  reduction_step float not null,
+  software_resets float not null,
+  device_id integer references device(id)
+);
