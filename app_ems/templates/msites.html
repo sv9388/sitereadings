@@ -1,0 +1,51 @@
+{% from "_formhelpers.html" import render_field %}
+{% extends 'fclayout.html' %}
+{% block formcontent %}
+    <style> .daterange { width: 250px !important; } </style>
+
+<form class="form-inline" method="post" action="{{url_for(thisurl)}}">
+  {{ render_field(form.metric, "form-control bsel")}}
+  {{ render_field(form.site_ids, "form-control bmulsel")}}
+  {{ render_field(form.chart_type, "form-control bsel")}}
+  {{ render_field(form.aggregate_unit, "form-control bsel")}}
+  {{ render_field(form.date_range, "form-control daterange")}}
+  <button type="submit" class = "btn btn-success">Get Chart</button>
+</form>
+{% endblock %}
+{% block formscripts %}
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(".bsel").multiselect();
+    $(".bmulsel").multiselect({
+        templates: {
+            li: '<li><a class="dropdown-item" tabindex="0"><label style="padding-left: 10px;width: 100%"></label></a></li>',
+            ul: ' <ul class="multiselect-container dropdown-menu p-1 m-0"></ul>',
+            button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown" data-flip="false"><span class="multiselect-selected-text"></span> <b class="caret"></b></button>',
+            filter: '<li class="multiselect-item filter"><div class="input-group m-0"><input class="form-control multiselect-search" type="text"></div></li>',
+            filterClearBtn: '<span class="input-group-btn"><button class="btn btn-secondary multiselect-clear-filter" type="button"><i class="fas fa-minus-circle"></i></button></span>'
+        },
+        buttonContainer: '<div class="dropdown" />',
+        buttonClass: 'btn btn-secondary',
+        multiple: true, maxHeight: 200, enableFiltering: true, filterBehavior: 'value', enableClickableOptGroups: true, enableCollapsibleOptGroups: true
+    });
+    $('.daterange').daterangepicker({
+      locale: {
+        format: 'YYYY-MM-DD'
+      },
+      "showDropdowns": true,
+      "ranges": {
+        "Last 7 Days": [ moment().subtract(7, "days").format("YYYY-MM-DD"),  moment().format("YYYY-MM-DD") ],
+        "Last 30 Days": [ moment().subtract(30, "days").format("YYYY-MM-DD"),  moment().format("YYYY-MM-DD") ],
+        "Current Month" : [ moment().year(moment().year()).month(moment().month()).date(1).format("YYYY-MM-DD"),  moment().format("YYYY-MM-DD") ],
+        "Last 12 Months": [ moment().subtract(12, "months").format("YYYY-MM-DD"), moment().format("YYYY-MM-DD") ],
+        "Current Year" : [  moment().year(moment().year()).month(1).date(1).format("YYYY-MM-DD"), moment().format("YYYY-MM-DD") ],
+        "All" : [ moment().subtract(5, "years").format("YYYY-MM-DD"), moment().format("YYYY-MM-DD") ]
+      },
+      "startDate": moment().subtract(7, "days").format("YYYY-MM-DD"),
+      "endDate": moment().format("YYYY-MM-DD")
+      }, function(start, end, label) {
+      console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+    });
+  });
+</script>
+{% endblock %}

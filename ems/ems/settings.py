@@ -13,7 +13,7 @@ BOT_NAME = 'ems'
 
 SPIDER_MODULES = ['ems.spiders']
 NEWSPIDER_MODULE = 'ems.spiders'
-DATABASE = "postgres://siteruser:siteruser@powersinesdb1.cm6zndedailb.eu-central-1.rds.amazonaws.com:5432/siter"
+DATABASE =  "postgres://powersines:powersines@powersinesdb.cm6zndedailb.eu-central-1.rds.amazonaws.com:5432/siter"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'ems (+http://www.yourdomain.com)'

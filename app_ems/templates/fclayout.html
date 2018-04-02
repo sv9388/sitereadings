@@ -1,0 +1,21 @@
+{% extends 'barebones.html' %}
+
+{% block pagecontent %}
+<div class="card-body">
+  <h5 class = "card-title"> EMS Charts </h5>
+  <div class="row">
+    {% block formcontent %}{% endblock %}
+  </div>
+  <br><br>
+  <div class="row">
+    <div id="outputchart" style="min-width: 95%; height: 400px; margin: 0 auto"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block customscripts %}
+<script type="text/javascript">
+  new Highcharts.Chart({{ chart | tojson | safe }});
+</script>
+  {% block formscripts %}{% endblock %}
+{% endblock %}

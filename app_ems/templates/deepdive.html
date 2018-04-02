@@ -1,0 +1,16 @@
+{% from "_formhelpers.html" import render_field %}
+{% extends 'fclayout.html' %}
+{% block formcontent %}
+
+<form class="form-inline" method="post" action="{{url_for(thisurl)}}">
+  {{ render_field(form.site_id, "form-control bsel")}}
+  <button type="submit" class = "btn btn-success">Get Chart</button>
+</form>
+{% endblock %}
+{% block formscripts %}
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(".bsel").multiselect({ maxHeight: 200, enableFiltering: true, filterBehavior: 'text' });
+  });
+</script>
+{% endblock %}

@@ -1,3 +1,7 @@
+# Query type
+QUERY_MSITES = 1
+QUERY_MTIMERANGES = 2
+
 # Charts
 BAR = "bar"
 LINE = "line"
