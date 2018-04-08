@@ -30,10 +30,14 @@ class EmsPipeline(object):
     readings = item["readings"]
     for i in range(len(readings)):
       readings[i]["device_id"] = device_dbid
+    print(readings[0], len(readings))
     reading_dbents = [Reading(**x) for x in readings]
+    print(len(reading_dbents))
     try:
       self.session.add_all(reading_dbents)
       self.session.commit()
-    except:
+      print("Added")
+    except Exception as e:
+      print("Rolled back", e)
       self.session.rollback()
     return {} 

@@ -13,7 +13,7 @@ def get_dd_chart_data(site_id):
     return {}, "No assosciated device found"
 
   readings = device.readings
+  print(readings[0].__dict__.keys())
   df = pd.DataFrame.from_records([x.__dict__ for x in readings])
-  print(df)
   chart, errors = serialize(df)
   return chart, errors

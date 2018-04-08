@@ -4,7 +4,7 @@
 
 <form class="form-inline" method="post" action="{{url_for(thisurl)}}">
   {{ render_field(form.site_id, "form-control bsel")}}
-  <button type="submit" class = "btn btn-success">Get Chart</button>
+  <button type="submit" class = "btn btn-success" onclick="loading(); return true;" >Get Chart</button>
 </form>
 {% endblock %}
 {% block formscripts %}

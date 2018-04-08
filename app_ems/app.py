@@ -21,6 +21,7 @@ def index():
 def multiple_sites():
   form = SitesForm()
   sites, ctype, start_date, end_date, aggperiod, metric = form.site_ids.data, form.chart_type.default, datetime.today()-timedelta(days = 7), datetime.today(), form.aggregate_unit.default, form.metric.default
+  print(type(sites[0]), aggperiod)
 
   if request.method == "POST":
     print(request.form)

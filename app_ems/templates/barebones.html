@@ -9,10 +9,27 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css" type="text/css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+    <style>#loading {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('/static/loading.gif')
+                50% 50% 
+                no-repeat;
+    }
+    </style>
   </head>
   <body>
-    <div class="container">
+    <div id="loading"></div>
+    <div id="content">
+      <div class="container">
       {% block pagecontent %}{% endblock %}
+      </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -26,6 +43,13 @@
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.css" />
+
+    <script type="text/javascript">// <![CDATA[
+        function loading(){
+            $("#loading").show();
+            $("#content").hide();      
+        }
+     // ]]></script>
     <script type="text/javascript">
       toastr.options = {
         "closeButton": true,
@@ -45,7 +69,7 @@
         "hideMethod": "fadeOut"
       };
       console.log("{{errors}}");
-      {% if errors != "" %}
+      {% if errors | length > 0 %}
         toastr["error"]("{{errors}}");
       {% endif %}
     </script>

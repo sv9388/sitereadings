@@ -9,7 +9,7 @@
   {{ render_field(form.chart_type, "form-control bsel")}}
   {{ render_field(form.aggregate_unit, "form-control bsel")}}
   {{ render_field(form.date_range, "form-control daterange")}}
-  <button type="submit" class = "btn btn-success">Get Chart</button>
+  <button type="submit" class = "btn btn-success" onclick="loading(); return true;" >Get Chart</button>
 </form>
 {% endblock %}
 {% block formscripts %}
