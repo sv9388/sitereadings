@@ -15,7 +15,7 @@ agg_mapping = {LAST_7_DAYS :  "Last 7 days", LAST_30_DAYS : "Last 30 days", CURR
  
 def serialize(df, df2, qtype, metric, sd_str, ed_str, sd_str2, ed_str2, kind): 
   # msites = Time vs Metric (multiple sites per time graph). mtimerange = Site vs Metric (2 tr per range graph)
-  chart_json = {"chart" : {"type" : "", "renderTo" : CHART_DIV_ID}, "title" : {"text" : ""}, "yAxis" : {"title" : {"text" : ""}}, "legend" : {"layout" : "vertical", "align" : "right", "verticalAlign" : "middle" }, "series" : [], "responsive" : { "rules" : [{"condition" : {"maxWidth" : 500}, "chartOptions": {"legend" : { "layout" : "horizontal", "align" : "center", "verticalAlign" : "bottom"}}}]}}
+  chart_json = {"chart" : {"zoomType": 'x', "type" : "", "renderTo" : CHART_DIV_ID}, "title" : {"text" : ""}, "yAxis" : {"title" : {"text" : ""}}, "series" : [], "responsive" : { "rules" : [{"condition" : {"maxWidth" : 500}, "chartOptions": {"legend" : { "layout" : "horizontal", "align" : "center", "verticalAlign" : "bottom"}}}]}}
   chart_json["yAxis"]["title"]["text"] = metric
   chart_json["chart"]["type"] = kind
 
@@ -34,7 +34,6 @@ def serialize(df, df2, qtype, metric, sd_str, ed_str, sd_str2, ed_str2, kind):
     opj.append({"name" : "{} - {}".format(sd_str2, ed_str2), "data" : [[x, df2[x].sum().item()] for x in categories]})
     chart_json["series"] = opj #me" : x, "data" : df[['time', x]].values.tolist()} for x in df.columns if x != "time"]
 
-  #print(chart_json["series"])
   return chart_json, ""
 
 def _get_readings(sites_arr, start_date, end_date, agg_period, metric):
@@ -55,8 +54,7 @@ def _get_df(op_arr, devices, agg_period, metric):
     for x in df.columns:
       df[x]/=devices[x][1]
   df.columns = [devices[x][0] for x in df.columns]
-  df['time'] = df.index * agg_period * 1000
-  print("DF shape", df.shape)
+  df['time'] = df.index * agg_period * 1000 if not df.empty else 0
   return df
 
 def get_chart_data(sites_arr, ctype, start_date, end_date, agg_period, start_date2 = None, end_date2 = None, metric = "total_kwh", qtype = QUERY_MSITES ):

@@ -1,11 +1,11 @@
-from flask import request, render_template, Flask, jsonify
+from flask import request, render_template, Flask, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_restless import APIManager
 from datetime import datetime, timedelta
-import random
+import random, json
 
 app = Flask(__name__)
-app.config.from_pyfile("./settings.py")
+app.config.from_object('settings.DevelopmentConfig')
 db = SQLAlchemy(app)
 
 from charts import * 
@@ -13,49 +13,42 @@ from deep_dive import *
 from enums import *
 from forms import *
 
+error_chart = {"chart":{"renderTo":CHART_DIV_ID, "ignoreHiddenSeries" : False}, "title" : {"text" : "Fix errors to populate chart"}, "yAxis":{"labels":{}},"series":[{"data":[]}]}
+
 @app.route("/")
 def index():
   return render_template("index.html")
 
-@app.route("/powersines/multiple_sites", methods = ["GET", "POST"])
-def multiple_sites():
-  form = SitesForm()
-  sites, ctype, start_date, end_date, aggperiod, metric = form.site_ids.data, form.chart_type.default, datetime.today()-timedelta(days = 7), datetime.today(), form.aggregate_unit.default, form.metric.default
-  print(type(sites[0]), aggperiod)
+@app.route("/powersines/compare_sites", methods = ["GET", "POST"])
+def compare_sites():
+  form = CustomSitesForm(request.form)
+  metric, sites, date_range, aggperiod, ctype, date_range2 = form.metric.default, form.site_ids.default, form.date_range.default, form.aggregate_unit.default, form.chart_type.default, form.date_range2.default
+  start_date, end_date = [datetime.strptime(x, "%Y-%m-%d") for x in date_range.split(" - ")]
+  qtype = QUERY_MTIMERANGES if date_range2 and date_range2.strip() != "" else QUERY_MSITES
+  start_date2, end_date2 = [datetime.strptime(x, "%Y-%m-%d") for x in date_range2.split(" - ")] if qtype == QUERY_MTIMERANGES else [None, None]
 
-  if request.method == "POST":
-    print(request.form)
-    ctype = request.form['chart_type']
-    daterange = request.form['date_range']
-    metric = request.form['metric']
-    aggperiod  = int(request.form['aggregate_unit'])
-    sites = request.form.getlist('site_ids')
-    start_date, end_date = [datetime.strptime(x, "%Y-%m-%d") for x in daterange.split(" - ")]
+  if request.method == "GET":
+    chart, errors = get_chart_data(sites, ctype, start_date, end_date, aggperiod, start_date2, end_date2, metric, qtype)
+    return render_template("compare_sites.html", form  = form, chart = chart, errors = errors)
 
-  sites = list(set([int(x) for x in sites]))
-  print(start_date, end_date)
-  chart, errors = get_chart_data(sites, ctype, start_date, end_date, aggperiod, metric = metric, qtype = QUERY_MSITES )
-  return render_template("msites.html", form = form, chart = chart, thisurl = "multiple_sites", errors = errors)
+  if not form.validate():
+    print(form.errors)
+    return render_template("compare_sites.html", form  = form, chart = error_chart, errors = "There were some errors in your choices. Fix them to populate the chart")
 
-@app.route("/powersines/two_timerange", methods = ["GET", "POST"])
-def two_timeranges():
-  form = TimerangesForm()
-  sites, ctype, start_date, end_date, start_date2, end_date2, aggperiod, metric =  form.site_ids.data, form.chart_type.default, datetime.today() - timedelta(days = 7), datetime.today(), datetime.today() - timedelta(days = 14), datetime.today() - timedelta(days = 7), form.aggregate_unit.default, form.metric.default
-
-  if request.method == "POST":
-    print(request.form)
-    sites = request.form.getlist('site_ids')
-    daterange1 = request.form['date_range']
-    daterange2 = request.form['date_range2']
-    metric = request.form['metric']
-    aggperiod  = int(request.form['aggregate_unit'])
-    daterange = request.form['date_range']
-    start_date, end_date = [datetime.strptime(x, "%Y-%m-%d") for x in daterange.split(" - ")]
-    daterange2 = request.form['date_range2']
-    start_date2, end_date2 = [datetime.strptime(x, "%Y-%m-%d") for x in daterange2.split(" - ")]
-
-  chart, errors = get_chart_data(sites, ctype, start_date, end_date, aggperiod, start_date2, end_date2, metric, QUERY_MTIMERANGES)
-  return render_template("mtimeranges.html", form  = form, chart = chart, thisurl = "two_timeranges", errors = errors)
+  print(form.site_ids.data, form.chart_type.data, form.date_range.data, form.date_range2.data, form.metric.data, form.aggregate_unit.data)
+  sites = form.site_ids.data
+  ctype = form.chart_type.data
+  date_range = form.date_range.data
+  date_range2 = form.date_range2.data
+  metric = form.metric.data
+  aggperiod  = form.aggregate_unit.data
+  start_date, end_date = [datetime.strptime(x, "%Y-%m-%d") for x in date_range.split(" - ")]
+  qtype = QUERY_MTIMERANGES if date_range2 and date_range2.strip() != "Invalid date - Invalid date" else QUERY_MSITES
+  start_date2, end_date2 = [datetime.strptime(x, "%Y-%m-%d") for x in date_range2.split(" - ")] if qtype == QUERY_MTIMERANGES else [None, None]
+  print(sites, ctype, date_range, date_range2, metric, aggperiod)
+  chart, errors = get_chart_data(sites, ctype, start_date, end_date, aggperiod, start_date2, end_date2, metric, qtype)
+  print(chart)
+  return render_template("compare_sites.html", form  = form, chart = chart, errors = errors)
 
 @app.route("/powersines/deep_dive_site", methods = ["GET", "POST"])
 def deep_dive_site():
@@ -65,6 +58,6 @@ def deep_dive_site():
     print(request.form)
     site_id = int(request.form["site_id"])
   print(site_id, type(site_id))
-  chart, errors = get_dd_chart_data(site_id)
-  return render_template("deepdive.html", form = form, chart = chart, thisurl = "deep_dive_site", errors = errors)
+  chart_op =  get_dd_chart_data(site_id)
+  return render_template("deepdive.html", form = form, chart_op = chart_op, errors = "")
 

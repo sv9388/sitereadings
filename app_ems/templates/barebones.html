@@ -1,78 +1,294 @@
+
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-    <title>EMS</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta content="EMS">
-    <meta content="EMS" name="author">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css" type="text/css">
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
-    <style>#loading {
-    display:    none;
-    position:   fixed;
-    z-index:    1000;
-    top:        0;
-    left:       0;
-    height:     100%;
-    width:      100%;
-    background: rgba( 255, 255, 255, .8 ) 
-                url('/static/loading.gif')
-                50% 50% 
-                no-repeat;
-    }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
+    <meta name="author" content="Coderthemes">
+    <link rel="shortcut icon" href="{{url_for('static', filename = 'assets/images/favicon.ico')}}">
+    <link href="{{url_for('static', filename = 'plugins/switchery/switchery.min.css')}}" rel="stylesheet" >
+    <link href="{{url_for('static', filename = 'plugins/jquery-circliful/css/jquery.circliful.css')}}" rel="stylesheet" type="text/css" >
+    <link rel="stylesheet" href="{{url_for('static', filename = 'assets/css/bootstrap.min.css')}}">
+    <link href="{{url_for('static', filename = 'plugins/multiselect/css/multi-select.css')}}"  rel="stylesheet" type="text/css" />
+    <link href="{{url_for('static', filename = 'plugins/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename = 'plugins/bootstrap-daterangepicker/daterangepicker.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename = 'assets/css/icons.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{url_for('static', filename = 'assets/css/style.css')}}" rel="stylesheet" type="text/css">
+    <script src="{{url_for('static', filename = 'assets/js/modernizr.min.js')}}"></script>
+    <title>POWERSINES</title>
+    <style> .daterange { width: 250px !important; } </style>
   </head>
-  <body>
-    <div id="loading"></div>
-    <div id="content">
-      <div class="container">
-      {% block pagecontent %}{% endblock %}
-      </div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.js"></script>
-    <script src="https://use.fontawesome.com/releases/v5.0.1/js/all.js"></script>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/series-label.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.js"></script>
-    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.css" />
 
-    <script type="text/javascript">// <![CDATA[
-        function loading(){
-            $("#loading").show();
-            $("#content").hide();      
-        }
-     // ]]></script>
-    <script type="text/javascript">
-      toastr.options = {
-        "closeButton": true,
-        "debug": false,
-        "newestOnTop": true,
-        "progressBar": false,
-        "positionClass": "toast-top-center",
-        "preventDuplicates": true,
-        "onclick": null,
-        "showDuration": "300",
-        "hideDuration": "1000",
-        "timeOut": "5000",
-        "extendedTimeOut": "1000",
-        "showEasing": "swing",
-        "hideEasing": "linear",
-        "showMethod": "fadeIn",
-        "hideMethod": "fadeOut"
-      };
-      console.log("{{errors}}");
-      {% if errors | length > 0 %}
-        toastr["error"]("{{errors}}");
-      {% endif %}
+
+  <body class="fixed-left">
+    <!-- Begin page -->
+    <div id="wrapper">
+      <!-- Top Bar Start -->
+      <div class="topbar">
+        <!-- LOGO -->
+        <div class="topbar-left">
+          <div class="text-center">
+            <a href="#" class="logo"><i class="mdi mdi-radar"></i> <span>Minton</span></a>
+          </div>
+        </div>
+
+        <!-- Button mobile view to collapse sidebar menu -->
+        <nav class="navbar-custom">
+
+          <ul class="list-inline float-right mb-0">
+
+            <li class="list-inline-item notification-list hide-phone">
+              <a class="nav-link waves-light waves-effect" href="#" id="btn-fullscreen">
+                <i class="mdi mdi-crop-free noti-icon"></i>
+              </a>
+            </li>
+
+            <li class="list-inline-item notification-list">
+              <a class="nav-link right-bar-toggle waves-light waves-effect" href="#">
+                <i class="mdi mdi-dots-horizontal noti-icon"></i>
+              </a>
+            </li>
+
+            <li class="list-inline-item dropdown notification-list">
+              <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
+                 aria-haspopup="false" aria-expanded="false">
+                <i class="mdi mdi-bell noti-icon"></i>
+                <span class="badge badge-pink noti-icon-badge">4</span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-menu-lg" aria-labelledby="Preview">
+                <!-- item-->
+                <div class="dropdown-item noti-title">
+                  <h5 class="font-16"><span class="badge badge-danger float-right">5</span>Notification</h5>
+                </div>
+
+                <!-- item-->
+                <a href="javascript:void(0);" class="dropdown-item notify-item">
+                  <div class="notify-icon bg-success"><i class="mdi mdi-comment-account"></i></div>
+                  <p class="notify-details">Robert S. Taylor commented on Admin<small class="text-muted">1 min ago</small></p>
+                </a>
+
+                <!-- item-->
+                <a href="javascript:void(0);" class="dropdown-item notify-item">
+                  <div class="notify-icon bg-info"><i class="mdi mdi-account"></i></div>
+                  <p class="notify-details">New user registered.<small class="text-muted">1 min ago</small></p>
+                </a>
+
+                <!-- item-->
+                <a href="javascript:void(0);" class="dropdown-item notify-item">
+                  <div class="notify-icon bg-danger"><i class="mdi mdi-airplane"></i></div>
+                  <p class="notify-details">Carlos Crouch liked <b>Admin</b><small class="text-muted">1 min ago</small></p>
+                </a>
+
+                <!-- All-->
+                <a href="javascript:void(0);" class="dropdown-item notify-item notify-all">
+                  View All
+                </a>
+
+              </div>
+            </li>
+
+            <li class="list-inline-item dropdown notification-list">
+              <a class="nav-link dropdown-toggle waves-effect waves-light nav-user" data-toggle="dropdown" href="#" role="button"
+                 aria-haspopup="false" aria-expanded="false">
+                <img src="{{url_for('static', filename = 'assets/images/users/avatar-1.jpg')}}" alt="user" class="rounded-circle">
+              </a>
+              <div class="dropdown-menu dropdown-menu-right profile-dropdown " aria-labelledby="Preview">
+                <!-- item-->
+                <div class="dropdown-item noti-title">
+                  <h5 class="text-overflow"><small>Welcome ! John</small> </h5>
+                </div>
+
+                <!-- item-->
+                <a href="javascript:void(0);" class="dropdown-item notify-item">
+                  <i class="mdi mdi-account"></i> <span>Profile</span>
+                </a>
+
+                <!-- item-->
+                <a href="javascript:void(0);" class="dropdown-item notify-item">
+                  <i class="mdi mdi-settings"></i> <span>Settings</span>
+                </a>
+
+                <!-- item-->
+                <a href="javascript:void(0);" class="dropdown-item notify-item">
+                  <i class="mdi mdi-lock-open"></i> <span>Lock Screen</span>
+                </a>
+
+                <!-- item-->
+                <a href="javascript:void(0);" class="dropdown-item notify-item">
+                  <i class="mdi mdi-logout"></i> <span>Logout</span>
+                </a>
+
+              </div>
+            </li>
+
+          </ul>
+
+          <ul class="list-inline menu-left mb-0">
+            <li class="float-left">
+              <button class="button-menu-mobile open-left waves-light waves-effect">
+                <i class="mdi mdi-menu"></i>
+              </button>
+            </li>
+            <li class="hide-phone app-search">
+              <form role="search" class="">
+                <input type="text" placeholder="Search..." class="form-control">
+                <a href=""><i class="fa fa-search"></i></a>
+              </form>
+            </li>
+          </ul>
+
+        </nav>
+
+      </div>
+      <!-- Top Bar End -->
+      <!-- Start right Content here -->
+      <!-- ============================================================== -->            
+      <div class="content-page">
+        <!-- Start content -->
+        <div class="content">
+          <div class="container-fluid">
+
+            <!-- Page-Title -->
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="page-title-box">
+                  <h4 class="page-title">Welcome !</h4>
+                  <ol class="breadcrumb float-right">
+                    <li class="breadcrumb-item"><a href="#">Minton</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                  </ol>
+                  <div class="clearfix"></div>
+                </div>
+              </div>
+            </div>
+          <!-- Dynamic portions -->
+          {% block pagecontent %}{% endblock %} 
+         </div>
+          <!-- end container -->
+        </div>
+        <!-- end content -->
+
+        <footer class="footer">
+          2016 - 2018 © Minton <span class="hide-phone">- Coderthemes.com</span>
+        </footer>
+
+      </div>
+      <!-- ============================================================== -->
+      <!-- End Right content here -->
+      <!-- ============================================================== -->
+
+
+      <!-- Right Sidebar -->
+      <div class="side-bar right-bar">
+        <div class="">
+        </div>
+      </div>
+      <!-- /Right-bar -->
+
+    </div>
+    <!-- END wrapper -->
+
+
+  
+    <script>
+      var resizefunc = [];
     </script>
-    {% block customscripts %}{% endblock %}
+
+    <!-- Plugins  -->
+    <script src="{{url_for('static', filename = 'assets/js/jquery.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/js/popper.min.js')}}"></script><!-- Popper for Bootstrap -->
+    <script src="{{url_for('static', filename = 'assets/js/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/js/detect.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/js/fastclick.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/js/jquery.slimscroll.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/js/jquery.blockUI.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/js/waves.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/js/wow.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/js/jquery.nicescroll.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/js/jquery.scrollTo.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'plugins/switchery/switchery.min.js')}}"></script>
+
+    <script src="{{url_for('static', filename = 'plugins/custombox/dist/custombox.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'plugins/moment/moment.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static', filename = 'plugins/multiselect/js/jquery.multi-select.js')}}"></script>
+    <script src="{{url_for('static', filename = 'plugins/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'plugins/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/pages/jquery.form-advanced.init.js')}}"></script>
+
+    <!-- circliful Chart -->
+    <script src="{{url_for('static', filename = 'plugins/jquery-circliful/js/jquery.circliful.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'plugins/jquery-sparkline/jquery.sparkline.min.js')}}"></script>
+
+    <!-- skycons -->
+    <script src="{{url_for('static', filename = 'plugins/skyicons/skycons.min.js')}}" type="text/javascript"></script>
+
+    <!-- Page js  -->
+    <script src="{{url_for('static', filename = 'assets/pages/jquery.dashboard.js')}}"></script>
+
+    <!-- Custom main Js -->
+    <script src="{{url_for('static', filename = 'assets/js/jquery.core.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/js/jquery.app.js')}}"></script>
+
+    <script type="text/javascript">
+
+      // BEGIN SVG WEATHER ICON
+      if (typeof Skycons !== 'undefined'){
+        var icons = new Skycons(
+            {"color": "#00b19d"},
+            {"resizeClear": true}
+            ),
+            list  = [
+              "clear-day", "clear-night", "partly-cloudy-day",
+              "partly-cloudy-night", "cloudy", "rain", "sleet", "snow", "wind",
+              "fog"
+            ],
+            i;
+
+        for(i = list.length; i--; )
+          icons.set(list[i], list[i]);
+        icons.play();
+      };
+
+    </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.css" />
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/series-label.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bokeh/0.12.15/bokeh.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bokeh/0.12.15/bokeh-widgets.js"></script>
+  <script type="text/javascript">// <![CDATA[
+    function loading(){
+      $("#loading").show();
+      $("#content").hide();
+    }
+   // ]]></script>
+  <script type="text/javascript">
+    toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": true,
+    "progressBar": false,
+    "positionClass": "toast-top-center",
+    "preventDuplicates": true,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+    };
+    console.log("{{errors}}");
+    {% if errors | length > 0 %}
+    toastr["error"]("{{errors}}");
+    {% endif %}
+  </script>
+  {% block customscripts %}{% endblock %}
+
+
   </body>
 </html>

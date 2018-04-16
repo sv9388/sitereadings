@@ -18,6 +18,7 @@ class OptgroupSelectWidget(Select):
     if self.multiple:
       kwargs['multiple'] = True
     html = ['<select %s>' % html_params(name=field.name, **kwargs)]
+    print(field.choices)
     for item1, item2 in field.choices:
       if isinstance(item2, (list,tuple)):
         group_label = item1
@@ -35,41 +36,15 @@ class OptgroupSelectWidget(Select):
 
 
 class OptgroupSelectField(SelectField):
-  """
-  Add support of ``optgroup`` grouping to default WTForms' ``SelectField`` class.
-
-  Here is an example of how the data is laid out.
-
-    (
-      ('Fruits', (
-        ('apple', 'Apple'),
-        ('peach', 'Peach'),
-        ('pear', 'Pear')
-      )),
-      ('Vegetables', (
-        ('cucumber', 'Cucumber'),
-        ('potato', 'Potato'),
-        ('tomato', 'Tomato'),
-      )),
-      ('other','None Of The Above')
-    )
-
-  It's a little strange that the tuples are (value, label) except for groups which are (Group Label, list of tuples)
-  but this is actually how Django does it too https://docs.djangoproject.com/en/dev/ref/models/fields/#choices
-
-  """
   widget = OptgroupSelectWidget()
 
   def pre_validate(self, form):
-    """
-    Don't forget to validate also values from embedded lists.
-    """
     for item1,item2 in self.choices:
       if isinstance(item2, (list, tuple)):
         group_label = item1
         group_items = item2
         for val,label in group_items:
-          if val == self.data:
+          if val in self.data:
             return
       else:
         val = item1
@@ -78,7 +53,21 @@ class OptgroupSelectField(SelectField):
           return
     raise ValueError(self.gettext('Not a valid choice!'))
 
-class OptgroupSelectMultipleField(OptgroupSelectField, SelectMultipleField):
+class OptgroupSelectMultipleField(SelectMultipleField):
   widget = OptgroupSelectWidget(multiple = True)
+  def pre_validate(self, form):
+    for item1,item2 in self.choices:
+      if isinstance(item2, (list, tuple)):
+        group_label = item1
+        group_items = item2
+        for val,label in group_items:
+          if val in self.data:
+            return
+      else:
+        val = item1
+        label = item2
+        if val == self.data:
+          return
+    raise ValueError(self.gettext('Not a valid choice!'))
 
 

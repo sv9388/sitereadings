@@ -1,10 +1,10 @@
 {% extends 'barebones.html' %}
 
 {% block pagecontent %}
-<div class="card-body">
-  <h5 class = "card-title"> Choose from the Options Below: </h5>
-  <div class="row"> <a href = "{{url_for('multiple_sites')}}" onclick="loading(); return true;" > Compare multiple sites for one metric and one time range </a></div>
-  <div class="row"> <a href = "{{url_for('two_timeranges')}}" onclick="loading(); return true;" > Compare one metric of multiple site across two timeranges </a></div>
-  <div class="row"> <a href = "{{url_for('deep_dive_site')}}" onclick="loading(); return true;" > Deep Dive a single site </a></div>
+<div class="row">
+  <div class = "card-box text-center">
+  <h5 class ="text-dark  header-title m-t-0 m-b-30"> Choose from the Options Below: </h5>
+  <div class="row"> <a class = "card-link" href = "{{url_for('compare_sites')}}" onclick="loading(); return true;" > Compare multiple sites </a></div>
+  <div class="row"> <a class = "card-link" href = "{{url_for('deep_dive_site')}}" onclick="loading(); return true;" > Deep Dive a single site </a></div>
 </div>
 {% endblock %}
