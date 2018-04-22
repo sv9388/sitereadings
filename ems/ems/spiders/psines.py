@@ -31,9 +31,9 @@ class PowerSines(scrapy.Spider):
       return frmdata
 
     self.log("Timestamp specified")
-    # For custom timeranges, update start and end in config.json, uncomment next line and comment the line after that.
-    #dateranges = perdelta(datetime.strptime(config["start"], INPUT_DATE_FORMAT), datetime.strptime(config["end"], INPUT_DATE_FORMAT), timedelta(hours=1))
-    dateranges = perdelta(datetime.datetime.today() - datetime.timedelta(days = 1), datetime.datetime.today())
+    #For custom timeranges, update start and end in config.json, uncomment next line and comment the line after that.
+    dateranges = perdelta(datetime.strptime(config["start"], INPUT_DATE_FORMAT), datetime.strptime(config["end"], INPUT_DATE_FORMAT), timedelta(hours=1))
+    #dateranges = perdelta(datetime.datetime.today() - datetime.timedelta(days = 1), datetime.datetime.today())
 
     for timeslice in dateranges:
       self.log(timeslice)

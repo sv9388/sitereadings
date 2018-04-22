@@ -10,6 +10,7 @@ db = SQLAlchemy(app)
 
 from charts import * 
 from deep_dive import *
+from readings_pred import *
 from enums import *
 from forms import *
 
@@ -61,3 +62,18 @@ def deep_dive_site():
   chart_op =  get_dd_chart_data(site_id)
   return render_template("deepdive.html", form = form, chart_op = chart_op, errors = "")
 
+@app.route("/powersines/predict", methods = ["GET", "POST"])
+def predict_readings():
+  form = PredictionForm()
+  errors = ""
+  sites = [1, 2, 3]#form.site_ids.data
+  chart = get_predictions(sites)
+
+  if request.method == "GET":
+    return render_template("predict.html", form  = form, chart = chart, errors = errors)
+  if not form.validate():
+    print(form.errors)
+    return render_template("predict.html", form  = form, chart = chart, errors = errors)
+  sites = form.site_ids.data
+  _ = get_predictions(sites)
+  return render_template("predict.html", form  = form, chart = chart, errors = errors)
