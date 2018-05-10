@@ -16,6 +16,8 @@ class Device(db.Model):
   tag_site_type = db.Column(db.String()) 
   tag_size = db.Column(db.String())
   sqm = db.Column(db.Integer) #, nullable = False)
+  latitude = db.Column(db.Float)
+  longitude = db.Column(db.Float)
   __table_args__ = (CheckConstraint('sqm > 0', name='Sq/m must be positive'),)
 
 class Reading(db.Model):
@@ -27,3 +29,13 @@ class Reading(db.Model):
   device_id = db.Column(db.Integer, db.ForeignKey("device.id"))
   device_assosciated = db.relationship("Device", backref = db.backref('readings')) #, lazy = 'joined', cascade = "all, delete-orphan"), uselist = False)
   __table_args__ = (UniqueConstraint('rdate', 'device_id', name='_date_device_uc'), )
+
+
+class Weather(db.Model):
+  __tablename__ = "weather"
+  id = db.Column(db.Integer, primary_key = True)
+  rdate= db.Column(db.DateTime, nullable = False)
+  device_id = db.Column(db.Integer, db.ForeignKey("device.id"))
+  device_assosciated = db.relationship("Device", backref = db.backref('weather')) #, lazy = 'joined', cascade = "all, delete-orphan"), uselist = False)
+  __table_args__ = (UniqueConstraint('rdate', 'device_id', name='_date_device_weather_uc'), )
+

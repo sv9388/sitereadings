@@ -1,8 +1,7 @@
 import os
-
 import yaml
 
-SETTINGS_FILEPATH = "data/settings.yaml"
+SETTINGS_FILEPATH = os.path.dirname(os.path.realpath(__file__)) + "/data/settings.yaml"
 
 def get_all_settings():
 

@@ -23,8 +23,9 @@
       <form class="form" method="post" action="{{url_for('predict_readings')}}">
 
       <div class="modal-body">
-          <div class="row">{{ render_field(form.site_ids, "form-control multi-select", customprops = {"data-plugin" : "multiselect", "data-selectable-optgroup" : "true"}, colsize= 12)}}</div>
-          <div class="row"> {{ render_field(form.chart_type, "form-control", colsize = 6)}}</div>
+          <div class="row">{{ render_field(form.site_id, "form-control", colsize= 12)}}</div>
+          <div class="row"> {{ render_field(form.predict_for_timerange, "form-control", colsize = 6)}}</div><div class="row"> {{ render_field(form.aggregate_unit, "form-control", colsize = 6)}}</div>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Discard</button>

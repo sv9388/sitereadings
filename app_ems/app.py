@@ -64,16 +64,18 @@ def deep_dive_site():
 
 @app.route("/powersines/predict", methods = ["GET", "POST"])
 def predict_readings():
-  form = PredictionForm()
+  form = PredictionForm(request.form)
   errors = ""
-  sites = [1, 2, 3]#form.site_ids.data
-  chart = get_predictions(sites)
+  site, predict_for, agg_period = form.site_id.default, form.predict_for_timerange.default, form.aggregate_unit.default
 
   if request.method == "GET":
+    chart = get_predictions_chart(site, predict_for, agg_period)
     return render_template("predict.html", form  = form, chart = chart, errors = errors)
+
   if not form.validate():
     print(form.errors)
-    return render_template("predict.html", form  = form, chart = chart, errors = errors)
-  sites = form.site_ids.data
-  _ = get_predictions(sites)
+    return render_template("predict.html", form  = form, chart = error_chart, errors = errors)
+
+  site, predict_for, agg_period = form.site_id.data, form.predict_for_timerange.data, form.aggregate_unit.data
+  chart = get_predictions_chart(site, predict_for, agg_period)
   return render_template("predict.html", form  = form, chart = chart, errors = errors)

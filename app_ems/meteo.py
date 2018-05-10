@@ -78,6 +78,7 @@ def load_meteo_data(pod_id, meteo_dir=None, methods=None):
     meteo_filepath = os.path.join(meteo_dir, filename)
     print("Loading meteo data from: %s" % meteo_filepath)
 
+    #TODO: Get this data from weather table. It is in english. So there's no need to assume that. 
     if is_in_english(meteo_filepath):
         meteo_data = pd.read_csv(meteo_filepath, sep=",", parse_dates=['date'], index_col=0)
         meteo_data = meteo_data.rename(columns=EN_IT_MAP)

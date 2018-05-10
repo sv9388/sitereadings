@@ -20,3 +20,7 @@ ALL_DATA = 6
 FIFTEEN_MINUTES = 900
 HOURLY = 3600
 DAILY = 86400
+
+# Predict Period Range
+WEEK = 1
+DAY = 2

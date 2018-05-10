@@ -83,7 +83,7 @@ def load_dataset(path, normalize=False, cut=False, use_cache=True):
     if not os.path.exists(path):
         raise Exception("Dataset not found: %s" % (path))
 
-    df = pd.read_csv(path, sep=",").rename(columns={'timestamp': 'date', 'active_power': 'active', 'metric_value': 'active'})
+    df = pd.read_csv(path, sep=",").rename(columns={'timestamp': 'date', 'active_power': 'active', 'metric_value': 'active'}) #TODO: Get data from reading table here
     if 'anomaly_level' not in df.columns:
         df.loc[:, 'anomaly_level'] = 0
     else:
@@ -809,6 +809,7 @@ def get_valid_dates(dataset):
 
 ###########################################################################
 
+#TODO: Hybrid prop in models for hour
 def filter_by_hours(df, o, c, col="hour"):
     return df[(df[col] >= o) & (df[col] < c)]
 

@@ -18,7 +18,6 @@ class OptgroupSelectWidget(Select):
     if self.multiple:
       kwargs['multiple'] = True
     html = ['<select %s>' % html_params(name=field.name, **kwargs)]
-    print(field.choices)
     for item1, item2 in field.choices:
       if isinstance(item2, (list,tuple)):
         group_label = item1
@@ -43,6 +42,7 @@ class OptgroupSelectField(SelectField):
       if isinstance(item2, (list, tuple)):
         group_label = item1
         group_items = item2
+        print(type(self.data))
         for val,label in group_items:
           if val in self.data:
             return
