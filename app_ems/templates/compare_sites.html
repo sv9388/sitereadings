@@ -26,7 +26,11 @@
           <div class="row">{{ render_field(form.site_ids, "form-control multi-select", customprops = {"data-plugin" : "multiselect", "data-selectable-optgroup" : "true"}, colsize= 12)}}</div>
           <div class="row"> {{ render_field(form.metric, "form-control", colsize = 6)}} {{ render_field(form.chart_type, "form-control", colsize = 6)}}</div>
           <div>{{ render_field(form.date_range, "form-control", customprops = {"id" : "firstreportrange" }, colsize = 12) }}</div>
-          <div>{{ render_field(form.date_range2, "form-control", customprops = {"id" : "secondreportrange"}, colsize = 12) }}</div>
+          <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#sdr" aria-expanded="false" aria-controls="sdr">Compare against timerange</button>
+          <div class="collapse" id="sdr" class="card card-body">
+            <div>{{ render_field(form.date_range2, "form-control", customprops = {"id" : "secondreportrange"}, colsize = 12) }}</div>
+          </div>
+
           <div>{{ render_field(form.aggregate_unit, "form-control", colsize = 12)}}</div>
       </div>
       <div class="modal-footer">

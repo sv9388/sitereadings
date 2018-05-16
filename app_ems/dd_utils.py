@@ -97,12 +97,13 @@ def load_dataset(path, normalize=False, cut=False, use_cache=True):
     df = df.resample("15T").asfreq()
     df = df.reset_index()
     res = df.loc[:, ['date', 'active', 'pod', 'anomaly_level']]
-
+    print(df.head(20))
+    print(res.head(20))
     if cut:
         res["reconstructed"] = 1
         valid_dates = get_valid_dates(res)
         res.loc[res.date.apply(lambda x: x.date() in valid_dates), 'reconstructed'] = 0
-
+    print(res.head(20))
     res.to_csv(preprocessed_filepath)
     return res
 
@@ -835,7 +836,7 @@ def get_merged(pod_id, spans, cut_date=None, use_cache=True, temperature_col="te
     pod_info = get_pod_info(pod_id)
     LAST_DAY = 6
 
-    df_single_pod = load_dataset(os.path.join(data_dir, "%s.csv" % pod_id), cut=True, use_cache=True)
+    df_single_pod = load_dataset(os.path.join(data_dir, "%s.csv" % pod_id), cut=True, use_cache=True) #Get date, kwh as df
 
     if cut_date is not None:
         df_single_pod = df_single_pod[df_single_pod['date'] < pd.to_datetime(cut_date)]
@@ -855,27 +856,7 @@ def get_merged(pod_id, spans, cut_date=None, use_cache=True, temperature_col="te
     for o,c in spans:
         dfs.append(filter_by_hours(first_band, o, c, "hour"))
     first_band = pd.concat(dfs).sort_values(by="date")
-
-    #
-    # first_band = df_w_d.loc[(((df_w_d["hour"] < 18) & (df_w_d["hour"] >= 16)) |
-    #    ((df_w_d["hour"] >= 10) & (df_w_d["hour"] < 12))) & (df_w_d["weekday"] <= LAST_DAY)
-    #   ]
-    # print(first_band.shape)
-
-
     av_energy = first_band.groupby("data")[["active"]].mean().rename(columns={"active": "daily_av_energy"})
-
-    #
-    # name, description, province = locations.loc[df_w_d['pod'].iloc[0], ['company', 'description', 'province_shortname']].values
-    # file_name = str(province + '-' + description + '.csv')
-    # meteo_file = list(filter(lambda x: x.endswith(".csv") and
-    #                          file_name in x, os.listdir(meteo_dir)))
-    #
-    # print(file_name)
-    # print(meteo_file)
-    # assert False
-    # meteo_data = pd.read_csv(os.path.join(meteo_dir, meteo_file[0]), sep=",", parse_dates=['data', 'ora'])
-    # meteo_data["hour"] = meteo_data["ora"].dt.hour
 
     import meteo
     meteo_data = meteo.load_meteo_data(pod_id)
@@ -884,13 +865,6 @@ def get_merged(pod_id, spans, cut_date=None, use_cache=True, temperature_col="te
     for o,c in spans:
         dfs.append(filter_by_hours(meteo_data, o, c, "hour"))
     first_band_meteo = pd.concat(dfs).sort_values(by="data")
-    # print("fbm", first_band_meteo.shape)
-    # first_band_meteo = meteo_data.loc[((meteo_data['ora'].apply(lambda x: x.hour) <= 18) &
-    #                                    (meteo_data['ora'].apply(lambda x: x.hour) >= 16)) |
-    #                                   ((meteo_data['ora'].apply(lambda x: x.hour) >= 10) &
-    #                                    (meteo_data['ora'].apply(lambda x: x.hour) <= 12))
-    #                                  ]
-    # print("fbm", first_band_meteo.shape)
     first_band_meteo['temperatura'] = first_band_meteo[temperature_col]
 
 
@@ -1788,7 +1762,6 @@ def filter_periods(df, periods, col="date"):
 
 
 def plot_saving(df, df_ideal, by="month", periods=None, months="all", weekdays="all", energy2euro=0.17):
-
     plot_height = 500
     plot_width = 750
 
@@ -1810,12 +1783,6 @@ def plot_saving(df, df_ideal, by="month", periods=None, months="all", weekdays="
     source["tt_gain"] = source["gain"].astype(int)
     source["tt_gain_euro"] = (source["gain"] * energy2euro).astype(int)
     source["tt_gain_percentage"] = source["gain_percentage"].apply(lambda x: "%.1f%%" % x)
-
-
-    #source["Gain"] = source["gain"].astype(int)
-    #source["Ideal"] = source["active_ideal"].astype(int)
-    #source = ColumnDataSource(source)
-
 
     tooltips = [
         (by, "@label"),
@@ -1927,3 +1894,5 @@ def plot_saving(df, df_ideal, by="month", periods=None, months="all", weekdays="
 
     #p = Bar(df_gain)
 
+if __name__ == "__main__":
+  load_dataset("data/pod_energy/IT001E02055406.csv",  cut=True, use_cache=False)

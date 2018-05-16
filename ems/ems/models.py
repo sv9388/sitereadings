@@ -19,3 +19,14 @@ class Reading(Base):
   device_id = Column(Integer, ForeignKey("device.id"))
   readings_for_device = relationship("Device", cascade = "all, delete-orphan", single_parent = True)
   __table_args__ = (UniqueConstraint('rdate', 'device_id', name='_date_device_uc'), )
+
+
+class Weather(Base):
+  __tablename__ = "weather"
+  id = Column(Integer, primary_key = True)
+  wdate = Column(DateTime, nullable = False)
+  temp = Column(Float, nullable = False)
+  device_id = Column(Integer, ForeignKey("device.id"))
+  readings_for_device = relationship("Device", cascade = "all, delete-orphan", single_parent = True)
+  __table_args__ = (UniqueConstraint('wdate', 'device_id', name='_date_device_uc'), )
+

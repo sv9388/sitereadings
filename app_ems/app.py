@@ -9,7 +9,7 @@ app.config.from_object('settings.DevelopmentConfig')
 db = SQLAlchemy(app)
 
 from charts import * 
-from deep_dive import *
+from energy_consumption import *
 from readings_pred import *
 from enums import *
 from forms import *
@@ -44,7 +44,7 @@ def compare_sites():
   metric = form.metric.data
   aggperiod  = form.aggregate_unit.data
   start_date, end_date = [datetime.strptime(x, "%Y-%m-%d") for x in date_range.split(" - ")]
-  qtype = QUERY_MTIMERANGES if date_range2 and date_range2.strip() != "Invalid date - Invalid date" else QUERY_MSITES
+  qtype = QUERY_MTIMERANGES if date_range2 and date_range2.strip() not in ["Invalid date - Invalid date", ""] else QUERY_MSITES
   start_date2, end_date2 = [datetime.strptime(x, "%Y-%m-%d") for x in date_range2.split(" - ")] if qtype == QUERY_MTIMERANGES else [None, None]
   print(sites, ctype, date_range, date_range2, metric, aggperiod)
   chart, errors = get_chart_data(sites, ctype, start_date, end_date, aggperiod, start_date2, end_date2, metric, qtype)
@@ -59,8 +59,8 @@ def deep_dive_site():
     print(request.form)
     site_id = int(request.form["site_id"])
   print(site_id, type(site_id))
-  chart_op =  get_dd_chart_data(site_id)
-  return render_template("deepdive.html", form = form, chart_op = chart_op, errors = "")
+  chart_op, errors = get_ideal_energy_consumption_curves_chart(site_id)
+  return render_template("ecmap.html", form = form, chart_op = chart_op, errors = errors)
 
 @app.route("/powersines/predict", methods = ["GET", "POST"])
 def predict_readings():

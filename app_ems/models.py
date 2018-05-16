@@ -34,8 +34,13 @@ class Reading(db.Model):
 class Weather(db.Model):
   __tablename__ = "weather"
   id = db.Column(db.Integer, primary_key = True)
-  rdate= db.Column(db.DateTime, nullable = False)
+  wdate= db.Column(db.DateTime, nullable = False)
+  temp = db.Column(db.Float, nullable = False)
   device_id = db.Column(db.Integer, db.ForeignKey("device.id"))
   device_assosciated = db.relationship("Device", backref = db.backref('weather')) #, lazy = 'joined', cascade = "all, delete-orphan"), uselist = False)
-  __table_args__ = (UniqueConstraint('rdate', 'device_id', name='_date_device_weather_uc'), )
+  __table_args__ = (UniqueConstraint('wdate', 'device_id', name='_date_device_weather_uc'), )
 
+class CrawlLimits(db.Model):
+  id = db.Column(db.Integer, primary_key = True)
+  table_key = db.Column(db.String(10), nullable = False, unique = True)
+  date_limit = db.Column(db.DateTime, nullable = False)

@@ -55,7 +55,7 @@ class DeepDiveForm(FlaskForm):
   def __init__(self, *args, **kwargs):
     super(DeepDiveForm, self).__init__(*args, **kwargs)
     device_records = Device.query.all()
-    devices = [(d.id, d.device_id) for d in device_records]
+    devices = [(d.id, d.device_id) for d in device_records if d.latitude]
     self.site_id.choices = devices
     if len(devices) > 0:
       random.shuffle(devices)
