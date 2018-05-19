@@ -33,7 +33,7 @@
   </div>
 </div>
 
-{% for k in ["Ideal Energy Consumption Curves"] %}
+{% for k in ["True Energy Consumption Heatmap", "Reconstructed Energy Consumption Heatmap", "Potential Saving"] %}
 {% set pid =  loop.cycle(1, 2, 3, 4, 5) %}
 <div class="row">
   <div class="col-lg-12">
@@ -65,10 +65,9 @@
 {% endblock %}
 
 {% block customscripts %}
-  {% for k in ["Ideal Energy Consumption Curves"] %}
+  {% for k in ["True Energy Consumption Heatmap", "Reconstructed Energy Consumption Heatmap", "Potential Saving"] %}
     {% for script, div in chart_op[k] %}
       {{ script | safe }}
     {% endfor %}
   {% endfor %}
 {% endblock %}
-

@@ -10,6 +10,7 @@ db = SQLAlchemy(app)
 
 from charts import * 
 from energy_consumption import *
+from heatmaps import *
 from readings_pred import *
 from enums import *
 from forms import *
@@ -53,6 +54,17 @@ def compare_sites():
 
 @app.route("/powersines/deep_dive_site", methods = ["GET", "POST"])
 def deep_dive_site():
+  form = DeepDiveForm()
+  site_id = form.site_id.default
+  if request.method == "POST":
+    print(request.form)
+    site_id = int(request.form["site_id"])
+  print(site_id, type(site_id))
+  chart_op, errors = get_dd_chart_data(site_id)
+  return render_template("heatmap.html", form = form, chart_op = chart_op, errors = errors)
+
+@app.route("/powersines/energy_consumption", methods = ["GET", "POST"])
+def energy_consumption():
   form = DeepDiveForm()
   site_id = form.site_id.default
   if request.method == "POST":

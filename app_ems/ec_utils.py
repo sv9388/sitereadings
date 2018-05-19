@@ -11,7 +11,6 @@ import pandas as pd
 
 from scipy import stats
 from scipy import ndimage
-
 #from bokeh.io import output_notebook, output_file, show, push_notebook, save
 from bokeh.plotting import figure
 #import bokeh.palettes
@@ -27,13 +26,17 @@ from bokeh.models import (
 def load_dataset(site_id, cut=False):
     device = Device.query.get(site_id)
     readings = Reading.query.filter_by(device_id = site_id).order_by(Reading.rdate).all() #device.readings
-    arr = [[r.rdate, r.total_kwh, device.device_id] for r in readings]
-    df = pd.DataFrame(arr, columns = ["date", "active", "device"])
+    arr = [[r.rdate, r.total_kwh] for r in readings]
+    #arr = [[arr[i][0], int(arr[i][1] - arr[i-1][1]), arr[i][2]] for i in range(len(arr))]
+    df = pd.DataFrame(arr, columns = ["date", "active"])
+    df.active = df.active.diff()
+    df = df.iloc[1:]
     df['anomaly_level'] = 0
     df.loc[:, 'date'] = pd.to_datetime(df['date'])
     df = df.set_index('date')
 
-    df = df.resample("15T").fillna("nearest") #) #TODO: FILL NA 
+    df = df.resample("15T").fillna('ffill')
+    #df.active = df.active.fillna(int(df.active.mean())) #) #TODO: FILL NA 
     df['device'] = device.device_id
     df['anomaly_level'] = 0
     df = df.reset_index()
@@ -89,11 +92,6 @@ def filter_holidays(df):
         wdays = wdays.loc[wdays.reconstructed == 0]
     return wdays
 
-def entropy(data):
-    p_data= data.value_counts()/len(data) # calculates the probabilities
-    entro = stats.entropy(p_data)  # input probabilities to get the entropy
-    return entro
-
 def get_valid_dates(dataset):
     dataset['data'] = dataset['date'].apply(lambda x: x.date())
     dataset['ora'] = dataset['date'].apply(lambda x: datetime.datetime(2000, 1, 1, x.hour, x.minute))
@@ -115,7 +113,10 @@ def get_valid_dates(dataset):
     #x = pd.DataFrame()
     valid_dates = []
     for g in sorted(grouped.groups):
-        if not ((grouped.get_group(g)['filtered'] == 0) | grouped.get_group(g)['filtered'].isnull()).sum() >= 2: #TODO: Outlier = 70 for 6 years. For 1 year ~= 11
+        print("########################################################################################")
+        print(g)
+        print(grouped.get_group(g))
+        if not ((grouped.get_group(g)['filtered'] == 0) | grouped.get_group(g)['filtered'].isnull()).sum() >= 70: #TODO: Outlier = 70 for 6 years. For 1 year ~= 11
             #x = pd.concat([x, dataset[dataset['data'] == g]])
             valid_dates.append(g)
     print("Valid Dates Length = ", len(valid_dates))
@@ -249,6 +250,7 @@ def energy_temp(merged, averages, palette, bins=16, legend_col="month", confront
     legend_label=[labels[x] for x in merged[legend_col]]
     merged['legend_label'] = legend_label
 
+    print(merged.head())
     pod = merged['device'].values[0]
     #if pod.endswith(".csv"):
     #    pod = pod[:-4]

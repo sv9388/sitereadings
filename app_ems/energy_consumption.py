@@ -14,13 +14,10 @@ TEMPERATURE = "temp" #eratura_percepita"
 HOUR_SPANS = [(10, 12), (16,18)]
 CUT_DATE = '2018-02-01'
 
-# to speed up data loading process use cache
-# if data has changed in DATA_DIR or METEO_DIR, set to False to load new changes
-USE_CACHE = True
 def _get_iecc_chart(site_id):
   bins = 16
   palette = bokeh.palettes.viridis(bins)
-  merged, df = utils.get_merged(site_id, HOUR_SPANS, temperature_col=TEMPERATURE, cut_date=CUT_DATE)
+  merged, _ = utils.get_merged(site_id, HOUR_SPANS, temperature_col=TEMPERATURE, cut_date=CUT_DATE)
 
   METHOD = "dynamic" # 'dynamic' or 'fixed'
   MIN_SAMPLE = 15      # minumum samples needed to calculate an average for each temperature
@@ -28,7 +25,7 @@ def _get_iecc_chart(site_id):
   WINDOW_SIZE = 5 # no matter how many samples are found in the window this is the window size that will be used
   SIGMA_FACTOR = 0.5     # STDs below average energy usage for baseline
   OUTLIER_FACTOR = 1.5   # computes outliers as daily average lower than 25th percentile * OUTLIER_FACTOR,
-  AVG_METHOD = "median"  # choices are: mean, median
+  #AVG_METHOD = "median"  # choices are: mean, median
   LIN_REG_FROM = 25      # applicate linear regression between this temperature and max temperature
   filter_func = FilterFunc(OUTLIER_FACTOR)
   
@@ -51,3 +48,5 @@ def get_ideal_energy_consumption_curves_chart(site_id):
   op =  _get_iecc_chart(site_id)
   chart_op = {"Ideal Energy Consumption Curves" : op}
   return chart_op, ""
+
+#get_ideal_energy_consumption_curves_chart(1)

@@ -37,7 +37,8 @@ def _get_existing_readings(site_id):
   df = pd.DataFrame(readings, columns = DF_COLUMNS[:-1])
   df['rdate'] = df['rdate'].astype(str).apply(lambda x : int((datetime.strptime(x, "%Y-%m-%d %H:%M:%S") - epoch).total_seconds()))
   df['reading_type'] = 'ACTUAL'
-  return df
+  df['metric'] = df['metric'].diff()
+  return df.iloc[1:]
 
 def _predict(site_id, df):
   x = df['rdate'].values
@@ -59,23 +60,29 @@ def _predict(site_id, df):
   op_df = op_df.reset_index(drop = True)
   return op_df, df['rdate'].max().item()
 
-def _process_df(df1, agg_period, r1, r2):
-  df = df1[(df1['rdate']>=r1) & (df1['rdate']<r2)]
+def _process_df(df1, aps, sd, ed):
+  print(sd, ed)
+  df = df1[(df1['rdate']>=sd) & (df1['rdate']<ed)]
   pmin, pmax = df.rdate.min(), df.rdate.max()
   prange = []
 
   try:
-    prange = np.arange(pmin, pmax, agg_period)  
+    prange = np.arange(pmin, pmax, int(aps)*60)
   except:
     print("Empty DF")
     return pd.DataFrame()
 
-  df = df.groupby(pd.cut(df["rdate"], np.arange(df.rdate.min(), df.rdate.max(), agg_period))).sum()
-  df.rdate = [x.left for x in df.index.values]
+  df.rdate = df.rdate.apply(lambda epoch_diff : epoch + timedelta(seconds = epoch_diff))
+  df.rdate = pd.to_datetime(df.rdate)
+  df = df.set_index('rdate')
+  df = df.groupby(pd.Grouper(freq='{}Min'.format(aps))).aggregate(np.sum) #df.groupby(pd.cut(df.rdate, np.arange(sd, ed, agg_period))).sum()
+  df['rdate'] = df.index.tolist() #df.index.values]
+  df['rdate'] = df.rdate.apply(lambda rd : (rd - epoch).total_seconds())
   df = df.reset_index(drop = True)
+  print(df.head())
   return df[['rdate', 'metric']] 
 
-def _group_by_period(df, predict_for, agg_period):
+def _group_by_period(df, predict_for, aps):
   today = datetime.today()
   today_start = datetime(today.year, today.month, today.day, 0, 0, 0)
   now = datetime.now()
@@ -90,9 +97,9 @@ def _group_by_period(df, predict_for, agg_period):
   r3 = (r3 - epoch).total_seconds()
   r4 = (r4 - epoch).total_seconds()
 
-  past_df = _process_df(df, agg_period, r1, r2)
-  current_df = _process_df(df, agg_period, r2, r3)
-  pred_df = _process_df(df, agg_period, r3, r4) 
+  past_df = _process_df(df, aps, r1, r2)
+  current_df = _process_df(df, aps, r2, r3)
+  pred_df = _process_df(df, aps, r3, r4) 
 
   op_df = pd.concat([past_df, current_df, pred_df])
   op_df = op_df.sort_values(by=["rdate"])
@@ -109,6 +116,6 @@ def get_predictions_chart(site_id, predict_for, agg_period): #, chart_type):
   df = _get_existing_readings(site_id) #GET 2 MONTHS DATA AND PREDICT FOR THEM. GROUP BY WEEK LATER. 
   df_pred, dt_end = _predict(site_id, df)
   cdf = pd.concat([df, df_pred])
-  df, color_cut, dot_cut = _group_by_period(cdf, predict_for, agg_period)
+  df, color_cut, dot_cut = _group_by_period(cdf, predict_for, aps)
   chart = _get_chart(df, color_cut, dot_cut, chart_title, site_id)
   return chart

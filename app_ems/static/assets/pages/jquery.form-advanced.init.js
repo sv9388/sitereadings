@@ -75,12 +75,12 @@ $('#secondreportrange').daterangepicker({
       },
       "showDropdowns": true,
       "ranges": {
-        "None" : ["", ""],
+        //"None" : ["", ""],
         "Previous 7 days": [ moment().subtract(14, "days").format("YYYY-MM-DD"),  moment().subtract(7, "days").format("YYYY-MM-DD") ],
         "Previous 30 days": [ moment().subtract(60, "days").format("YYYY-MM-DD"),  moment().subtract(30, "days").format("YYYY-MM-DD") ]
       },
-      "startDate": moment().subtract(7, "days").format("YYYY-MM-DD"),
-      "endDate": moment().format("YYYY-MM-DD"),
+      "startDate": "Invalid Date", //moment().subtract(7, "days").format("YYYY-MM-DD"),
+      "endDate": "Invalid Date", //moment().format("YYYY-MM-DD"),
   opens: 'left',
   drops: 'down',
   buttonClasses: ['btn', 'btn-sm'],

@@ -11,6 +11,7 @@ def load_meteo_data(site_id):
   weathers = device.weather
   arr = [[x.wdate, x.temp] for x in weathers]
   meteo_data = pd.DataFrame(arr, columns = ["date", "temp"])
+  meteo_data.to_csv("./wt_ezhavu.csv")
   meteo_data["data"] = pd.to_datetime(meteo_data["date"]).dt.date
   meteo_data["hour"] = pd.to_datetime(meteo_data["date"]).dt.hour
   return meteo_data

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, date
 from models import *
 from enums import *
 from date_utils import *
-from sqlalchemy import func, extract, cast, Integer
+from sqlalchemy import func, extract
 from app import db
 
 epoch = datetime.utcfromtimestamp(0)
@@ -37,13 +37,15 @@ def serialize(df, df2, qtype, metric, sd_str, ed_str, sd_str2, ed_str2, kind):
   return chart_json, ""
 
 def _get_readings(sites_arr, start_date, end_date, agg_period, metric):
+  print(start_date, end_date)
   if not start_date or not end_date:
     return []
-  rq = db.session.query(Reading.device_id, (cast(extract('epoch', Reading.rdate)/agg_period, Integer)).label('grouped'), func.sum(Reading.total_kwh).label("value"))
+  rq = db.session.query(Reading.device_id, (func.floor(extract('epoch', Reading.rdate)/agg_period)).label('grouped'), (func.max(Reading.total_kwh)-func.min(Reading.total_kwh)).label("value"))
   rq = rq.filter(Reading.device_id.in_(sites_arr))
   rq = rq.filter(Reading.rdate >= start_date).filter(Reading.rdate <= end_date)
-  rq = rq.group_by(Reading.device_id, (cast(extract('epoch', Reading.rdate)/agg_period, Integer)).label('grouped'))
-  rq = rq.order_by(Reading.device_id, (cast(extract('epoch', Reading.rdate)/agg_period, Integer)).label('grouped'))
+  rq = rq.group_by(Reading.device_id, (func.floor(extract('epoch', Reading.rdate)/agg_period)).label('grouped'))
+  rq = rq.order_by(Reading.device_id, (func.floor(extract('epoch', Reading.rdate)/agg_period)).label('grouped'))
+  print(rq)
   readings = rq.all()
   return readings
 
@@ -52,7 +54,7 @@ def _get_df(op_arr, devices, agg_period, metric):
   df = df.pivot(index="grouped", columns="device_id", values="value")
   if metric == "kwh_psqm":
     for x in df.columns:
-      df[x]/=devices[x][1]
+      df[x] /= devices[x][1]
   df.columns = [devices[x][0] for x in df.columns]
   df['time'] = df.index * agg_period * 1000 if not df.empty else 0
   return df
