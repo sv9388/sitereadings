@@ -54,7 +54,7 @@ class PowerSines(scrapy.Spider):
 
     #For custom timeranges, update start and end in config.json, uncomment next line and comment the line after that.
     #dateranges = perdelta(datetime.strptime(config["start"], INPUT_DATE_FORMAT), datetime.strptime(config["end"], INPUT_DATE_FORMAT), timedelta(hours=1))
-    dateranges = perdelta(start_date, end_date, timedelta(hours=1))
+    dateranges = perdelta(start_date, end_date, timedelta(hours=1)) #TODO: Original
 
     for timeslice in dateranges:
       self.log(timeslice)
