@@ -9,7 +9,6 @@ bokeh==0.12.16
 cffi==1.11.5
 chardet==2.3.0
 click==6.7
-cloud-init==17.2
 command-not-found==0.3
 configobj==5.0.6
 constantly==15.1.0
