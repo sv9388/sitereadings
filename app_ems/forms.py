@@ -1,10 +1,37 @@
-from wtforms import SelectField, Form, validators, SubmitField, DateTimeField, StringField, SelectField
+from wtforms import SelectField, Form, validators, SubmitField, DateTimeField, StringField, SelectField, PasswordField
 from flask_wtf import FlaskForm
 from enums import *
 from models import Device
 from datetime import datetime, timedelta
 import random
 from optgroup_select_field import OptgroupSelectWidget, OptgroupSelectField, OptgroupSelectMultipleField
+from login_utils import current_user
+
+class LoginForm(FlaskForm):
+  email = StringField('Email', validators = [validators.DataRequired()])
+  password = PasswordField('Password', validators = [validators.DataRequired()])
+
+class EditProfileForm(FlaskForm):
+  email = StringField('Email', render_kw={'readonly': True})
+  password = PasswordField('New Password', [
+        validators.DataRequired(),
+        validators.EqualTo('confirm_password', message='Passwords must match')
+    ])
+  confirm_password = PasswordField('Repeat Password')
+  name = StringField('First Name')
+  surname = StringField('Surname')
+  role = StringField('Role', render_kw={'readonly': True})
+
+  def __init__(self, *args, **kwargs):
+    super(EditProfileForm, self).__init__(*args, **kwargs)
+    prf_user = None
+    if current_user.is_authenticated:
+        prf_user = current_user.get_id() # return username in get_id()
+        print(prf_user)
+        self.email.default = prf_user.email
+        self.name.default = prf_user.name
+        self.surname.default = prf_user.surname
+        self.role.default = prf_user.role.name
 
 class PredictionForm(Form):
   #site_ids = OptgroupSelectMultipleField("Site Ids", [validators.DataRequired()], coerce = int)
@@ -16,18 +43,10 @@ class PredictionForm(Form):
     super(PredictionForm, self).__init__(*args, **kwargs)
     device_records = Device.query.all()
     devices = [(d.id, d.device_id) for d in device_records]
-    #sizes, site_types = set([x.tag_size for x in device_records]), set([x.tag_site_type for x in device_records])
-    #cdict = { }
-    #for x in sizes:
-    #  cdict[x] = tuple([(d.id, d.device_id) for d in device_records if d.tag_size == x])
-    #for x in site_types:
-    #  cdict[x] = tuple([(d.id, d.device_id) for d in device_records if d.tag_site_type == x])
-    #self.site_id.choices = tuple(cdict.items())
     self.site_id.choices = devices
     self.site_id.default = 1
 
 DEFAULT_DATESTR = "{} - {}".format((datetime.today() - timedelta(days = 7)).strftime("%Y-%m-%d"), datetime.today().strftime("%Y-%m-%d"))
-print(DEFAULT_DATESTR)
 class CustomSitesForm(Form):
   metric = SelectField("Metric", [validators.DataRequired()], choices = [("total_kwh", "KwH"), ("kwh_psqm", "Kwh/SqM")], default = "total_kwh")
   chart_type = SelectField("Chart Type", [validators.DataRequired()],  choices = [(BAR , "Bar"), (LINE , "Line"), (COLUMN , "Column") ], default = COLUMN)

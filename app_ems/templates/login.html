@@ -1,0 +1,8 @@
+{% from "_formhelpers.html" import render_field %}
+{% extends 'barebones.html' %}
+{% block actual_layout %}
+<form method = "post" action = "{{url_for('index')}}">
+    {{ render_field(form.email) }}
+    {{ render_field(form.password) }}
+</form>
+{% endblock %}

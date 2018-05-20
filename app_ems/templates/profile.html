@@ -1,0 +1,51 @@
+{% extends 'app_layout.html' %}
+{% block pagecontent %}
+
+{% macro render_field(field) %}
+  <dt>{{ field.label }}
+  <dd>{{ field(**kwargs)|safe }}
+  {% if field.errors %}
+    <ul class=errors>
+    {% for error in field.errors %}
+      <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  </dd>
+{% endmacro %}
+
+<div class="row">
+  <div class="col-12">
+    <div class="card-box">
+      <h4 class="m-t-0 header-title">My Profile</h4>
+      <p class="text-muted m-b-30 font-14">
+        Edit your profile details here
+      </p>
+      <div class="row">
+        <div class="col-12">
+          <div class="p-20">
+            <form class="form-horizontal" role="form" method = "POST" action="{{url_for('my_account')}}">
+              {{ form.csrf_token }}
+              <div class="form-group row">
+                <label class="col-2 col-form-label">Email</label>
+                <div class="col-10"><input type="text" class="form-control" readonly="" value="{{user.email}}"></div>
+              </div>
+              {{ form.password }}
+              {{ form.confirm_password }}
+              {{ form.name }}
+              {{ form.surname }}
+              <div class="form-group row">
+                <label class="col-2 col-form-label">Role</label>
+                <div class="col-10"><input type="text" class="form-control" readonly="" value="{{user.role.name}}"></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- end row -->
+    </div>
+    <!-- end card-box -->
+  </div>
+  <!-- end col -->
+</div>
+{% endblock %}

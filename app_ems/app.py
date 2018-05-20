@@ -1,13 +1,16 @@
 from flask import request, render_template, Flask, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_restless import APIManager
+from flask_wtf.csrf import CSRFProtect
 from datetime import datetime, timedelta
 import random, json
 
 app = Flask(__name__)
 app.config.from_object('settings.DevelopmentConfig')
 db = SQLAlchemy(app)
+csrf = CSRFProtect(app)
 
+from login_utils import *
+from rest_utils import * 
 from charts import * 
 from energy_consumption import *
 from heatmaps import *
@@ -17,9 +20,21 @@ from forms import *
 
 error_chart = {"chart":{"renderTo":CHART_DIV_ID, "ignoreHiddenSeries" : False}, "title" : {"text" : "Fix errors to populate chart"}, "yAxis":{"labels":{}},"series":[{"data":[]}]}
 
-@app.route("/")
-def index():
-  return render_template("index.html")
+user = Emsuser.query.get(1)
+
+@app.route("/manage/devices")
+def manage_devices():
+  return render_template("manage_devices.html", user = user)
+
+@app.route("/manage/users")
+def manage_users():
+  return render_template("manage_users.html", user = user)
+
+
+@app.route('/profile')
+def my_account():
+  form = EditProfileForm()
+  return render_template('profile.html', form = form, user = user)
 
 @app.route("/powersines/compare_sites", methods = ["GET", "POST"])
 def compare_sites():
@@ -31,11 +46,11 @@ def compare_sites():
 
   if request.method == "GET":
     chart, errors = get_chart_data(sites, ctype, start_date, end_date, aggperiod, start_date2, end_date2, metric, qtype)
-    return render_template("compare_sites.html", form  = form, chart = chart, errors = errors)
+    return render_template("compare_sites.html", user = user, form = form, chart = chart, errors = errors)
 
   if not form.validate():
     print(form.errors)
-    return render_template("compare_sites.html", form  = form, chart = error_chart, errors = "There were some errors in your choices. Fix them to populate the chart")
+    return render_template("compare_sites.html", user = user, form = form, chart = error_chart, errors = "There were some errors in your choices. Fix them to populate the chart")
 
   print(form.site_ids.data, form.chart_type.data, form.date_range.data, form.date_range2.data, form.metric.data, form.aggregate_unit.data)
   sites = form.site_ids.data
@@ -50,7 +65,7 @@ def compare_sites():
   print(sites, ctype, date_range, date_range2, metric, aggperiod)
   chart, errors = get_chart_data(sites, ctype, start_date, end_date, aggperiod, start_date2, end_date2, metric, qtype)
   print(chart)
-  return render_template("compare_sites.html", form  = form, chart = chart, errors = errors)
+  return render_template("compare_sites.html", user = user, form = form, chart = chart, errors = errors)
 
 @app.route("/powersines/deep_dive_site", methods = ["GET", "POST"])
 def deep_dive_site():
@@ -61,7 +76,7 @@ def deep_dive_site():
     site_id = int(request.form["site_id"])
   print(site_id, type(site_id))
   chart_op, errors = get_dd_chart_data(site_id)
-  return render_template("heatmap.html", form = form, chart_op = chart_op, errors = errors)
+  return render_template("heatmap.html", user = user, form = form, chart_op = chart_op, errors = errors)
 
 @app.route("/powersines/energy_consumption", methods = ["GET", "POST"])
 def energy_consumption():
@@ -72,7 +87,7 @@ def energy_consumption():
     site_id = int(request.form["site_id"])
   print(site_id, type(site_id))
   chart_op, errors = get_ideal_energy_consumption_curves_chart(site_id)
-  return render_template("ecmap.html", form = form, chart_op = chart_op, errors = errors)
+  return render_template("ecmap.html", user = user, form = form, chart_op = chart_op, errors = errors)
 
 @app.route("/powersines/predict", methods = ["GET", "POST"])
 def predict_readings():
@@ -82,12 +97,12 @@ def predict_readings():
 
   if request.method == "GET":
     chart = get_predictions_chart(site, predict_for, agg_period)
-    return render_template("predict.html", form  = form, chart = chart, errors = errors)
+    return render_template("predict.html", user = user, form = form, chart = chart, errors = errors)
 
   if not form.validate():
     print(form.errors)
-    return render_template("predict.html", form  = form, chart = error_chart, errors = errors)
+    return render_template("predict.html", user = user, form = form, chart = error_chart, errors = errors)
 
   site, predict_for, agg_period = form.site_id.data, form.predict_for_timerange.data, form.aggregate_unit.data
   chart = get_predictions_chart(site, predict_for, agg_period)
-  return render_template("predict.html", form  = form, chart = chart, errors = errors)
+  return render_template("predict.html", user = user, form = form, chart = chart, errors = errors)

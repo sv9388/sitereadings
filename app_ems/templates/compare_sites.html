@@ -1,12 +1,10 @@
-{% extends 'barebones.html' %}
+{% extends 'app_layout.html' %}
 {% from "_formhelpers.html" import render_field %}
 
 {% block pagecontent %}
 <div class="row">
   <div class="button-list">
     <button type="button" class="btn btn-success waves-effect waves-light" data-toggle="modal" data-target="#customisechartmodal">Customise Chart</button>
-    <a class="btn btn-info waves-effect waves-light" href="{{url_for('deep_dive_site')}}" target="_blank">Deep Dive One Site ID</a>
-    <a class="btn btn-info waves-effect waves-light" href="{{url_for('predict_readings')}}" target="_blank">Predict Readings</a>
   </div>
 </div>
 <div align = "center" class="row">

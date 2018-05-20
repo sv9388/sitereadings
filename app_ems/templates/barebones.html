@@ -11,6 +11,8 @@
     <link href="{{url_for('static', filename = 'plugins/jquery-circliful/css/jquery.circliful.css')}}" rel="stylesheet" type="text/css" >
     <link rel="stylesheet" href="{{url_for('static', filename = 'assets/css/bootstrap.min.css')}}">
     <link href="{{url_for('static', filename = 'plugins/multiselect/css/multi-select.css')}}"  rel="stylesheet" type="text/css" />
+    <link href="{{url_for('static', filename = 'plugins/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" />
+    <link href="{{url_for('static', filename = 'plugins/datatables/buttons.bootstrap4.min.css')}}" rel="stylesheet" type="text/css" />
     <link href="{{url_for('static', filename = 'plugins/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}" rel="stylesheet">
     <link href="{{url_for('static', filename = 'plugins/bootstrap-daterangepicker/daterangepicker.css')}}" rel="stylesheet">
     <link href="{{url_for('static', filename = 'assets/css/icons.css')}}" rel="stylesheet" type="text/css">
@@ -24,175 +26,8 @@
 
 
   <body class="fixed-left">
-    <!-- Begin page -->
-    <div id="wrapper">
-      <!-- Top Bar Start -->
-      <div class="topbar">
-        <!-- LOGO -->
-        <div class="topbar-left">
-          <div class="text-center">
-            <a href="#" class="logo"><i class="mdi mdi-radar"></i> <span>Minton</span></a>
-          </div>
-        </div>
-
-        <!-- Button mobile view to collapse sidebar menu -->
-        <nav class="navbar-custom">
-
-          <ul class="list-inline float-right mb-0">
-
-            <li class="list-inline-item notification-list hide-phone">
-              <a class="nav-link waves-light waves-effect" href="#" id="btn-fullscreen">
-                <i class="mdi mdi-crop-free noti-icon"></i>
-              </a>
-            </li>
-
-            <li class="list-inline-item notification-list">
-              <a class="nav-link right-bar-toggle waves-light waves-effect" href="#">
-                <i class="mdi mdi-dots-horizontal noti-icon"></i>
-              </a>
-            </li>
-
-            <li class="list-inline-item dropdown notification-list">
-              <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
-                 aria-haspopup="false" aria-expanded="false">
-                <i class="mdi mdi-bell noti-icon"></i>
-                <span class="badge badge-pink noti-icon-badge">4</span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-menu-lg" aria-labelledby="Preview">
-                <!-- item-->
-                <div class="dropdown-item noti-title">
-                  <h5 class="font-16"><span class="badge badge-danger float-right">5</span>Notification</h5>
-                </div>
-
-                <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                  <div class="notify-icon bg-success"><i class="mdi mdi-comment-account"></i></div>
-                  <p class="notify-details">Robert S. Taylor commented on Admin<small class="text-muted">1 min ago</small></p>
-                </a>
-
-                <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                  <div class="notify-icon bg-info"><i class="mdi mdi-account"></i></div>
-                  <p class="notify-details">New user registered.<small class="text-muted">1 min ago</small></p>
-                </a>
-
-                <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                  <div class="notify-icon bg-danger"><i class="mdi mdi-airplane"></i></div>
-                  <p class="notify-details">Carlos Crouch liked <b>Admin</b><small class="text-muted">1 min ago</small></p>
-                </a>
-
-                <!-- All-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item notify-all">
-                  View All
-                </a>
-
-              </div>
-            </li>
-
-            <li class="list-inline-item dropdown notification-list">
-              <a class="nav-link dropdown-toggle waves-effect waves-light nav-user" data-toggle="dropdown" href="#" role="button"
-                 aria-haspopup="false" aria-expanded="false">
-                <img src="{{url_for('static', filename = 'assets/images/users/avatar-1.jpg')}}" alt="user" class="rounded-circle">
-              </a>
-              <div class="dropdown-menu dropdown-menu-right profile-dropdown " aria-labelledby="Preview">
-                <!-- item-->
-                <div class="dropdown-item noti-title">
-                  <h5 class="text-overflow"><small>Welcome ! John</small> </h5>
-                </div>
-
-                <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                  <i class="mdi mdi-account"></i> <span>Profile</span>
-                </a>
-
-                <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                  <i class="mdi mdi-settings"></i> <span>Settings</span>
-                </a>
-
-                <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                  <i class="mdi mdi-lock-open"></i> <span>Lock Screen</span>
-                </a>
-
-                <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                  <i class="mdi mdi-logout"></i> <span>Logout</span>
-                </a>
-
-              </div>
-            </li>
-
-          </ul>
-
-          <ul class="list-inline menu-left mb-0">
-            <li class="float-left">
-              <button class="button-menu-mobile open-left waves-light waves-effect">
-                <i class="mdi mdi-menu"></i>
-              </button>
-            </li>
-            <li class="hide-phone app-search">
-              <form role="search" class="">
-                <input type="text" placeholder="Search..." class="form-control">
-                <a href=""><i class="fa fa-search"></i></a>
-              </form>
-            </li>
-          </ul>
-
-        </nav>
-
-      </div>
-      <!-- Top Bar End -->
-      <!-- Start right Content here -->
-      <!-- ============================================================== -->            
-      <div class="content-page">
-        <!-- Start content -->
-        <div class="content">
-          <div class="container-fluid">
-
-            <!-- Page-Title -->
-            <div class="row">
-              <div class="col-sm-12">
-                <div class="page-title-box">
-                  <h4 class="page-title">Welcome !</h4>
-                  <ol class="breadcrumb float-right">
-                    <li class="breadcrumb-item"><a href="#">Minton</a></li>
-                    <li class="breadcrumb-item active">Dashboard</li>
-                  </ol>
-                  <div class="clearfix"></div>
-                </div>
-              </div>
-            </div>
-          <!-- Dynamic portions -->
-          {% block pagecontent %}{% endblock %} 
-         </div>
-          <!-- end container -->
-        </div>
-        <!-- end content -->
-
-        <footer class="footer">
-          2016 - 2018 © Minton <span class="hide-phone">- Coderthemes.com</span>
-        </footer>
-
-      </div>
-      <!-- ============================================================== -->
-      <!-- End Right content here -->
-      <!-- ============================================================== -->
-
-
-      <!-- Right Sidebar -->
-      <div class="side-bar right-bar">
-        <div class="">
-        </div>
-      </div>
-      <!-- /Right-bar -->
-
-    </div>
-    <!-- END wrapper -->
-
-
-  
+    {% block actual_layout %}{% endblock %} 
+ 
     <script>
       var resizefunc = [];
     </script>
@@ -217,6 +52,9 @@
     <script src="{{url_for('static', filename = 'plugins/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
     <script src="{{url_for('static', filename = 'plugins/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
     <script src="{{url_for('static', filename = 'assets/pages/jquery.form-advanced.init.js')}}"></script>
+
+    <script src="{{url_for('static', filename = 'plugins/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'plugins/datatables/dataTables.bootstrap4.min.js')}}"></script>
 
     <!-- circliful Chart -->
     <script src="{{url_for('static', filename = 'plugins/jquery-circliful/js/jquery.circliful.min.js')}}"></script>
@@ -288,6 +126,52 @@
     {% if errors | length > 0 %}
     toastr["error"]("{{errors}}");
     {% endif %}
+  </script>
+  <script>
+    function post_or_put_data(url, method, data) {
+      var op = null;
+      $.ajax({
+        url: url,
+        method: method,
+        data: data,
+        dataType: "application/json",
+        contentType: "application/json",
+        async: false,
+        success: function(response, statusCode) {
+          op = response;
+        },
+        error: function(response, statusCode) {
+          op = response;
+        }
+      });
+      return op;
+    }
+
+
+    function get_or_delete_data(url, method) {
+      var op = null;
+      $.ajax({
+        url: url,
+        method: method,
+        async: false,
+        success: function(response, statusCode) {
+          op = response;
+        },
+        error: function(response, statusCode) {
+          op = response;
+        }
+      });
+      return op;
+    }
+
+function jQFormSerializeArrToJson(formSerializeArr){
+ var jsonObj = {};
+ jQuery.map( formSerializeArr, function( n, i ) {
+     jsonObj[n.name] = n.value;
+ });
+
+ return JSON.stringify(jsonObj);
+}
   </script>
   {% block customscripts %}{% endblock %}
 

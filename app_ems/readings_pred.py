@@ -9,7 +9,7 @@ from app import db
 
 epoch = datetime.utcfromtimestamp(0)
 
-DF_COLUMNS = ['rdate', 'metric', 'reading_type']
+DF_COLUMNS = ['date', 'metric', 'reading_type']
 CHART_DIV_ID = "outputchart"
 OUTPUT_DATE_FORMAT = "%Y-%m-%d %H:%M"
 MAX_DAYS = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7:31, 8:31, 9:30, 10:31, 11:31, 12:31}
@@ -20,7 +20,7 @@ def _get_chart(df, color_cut_idx, dot_cut_idx, chart_title, site_id):
   chart_json = {"chart":{"zoomType":"x","type":"line","renderTo":CHART_DIV_ID},"title":{"text":"Forecast"},"xAxis":{"categories":[]},"responsive":{"rules":[{"condition":{"maxWidth":500},"chartOptions":{"legend":{"layout":"horizontal","align":"center","verticalAlign":"bottom"}}}]}}
 
   data = df.metric.values.tolist()
-  categories = df.rdate.values.tolist()
+  categories = df.date.values.tolist()
   categories = [(epoch + timedelta(seconds = x)).strftime("%A %d. %B %Y %H:%M:%S") for x in categories]
   chart_json['xAxis']['categories'] = categories
   series = {'zoneAxis' : 'x', 'name' : "Site Id: {}".format(site_id)}
@@ -32,38 +32,49 @@ def _get_chart(df, color_cut_idx, dot_cut_idx, chart_title, site_id):
 def _get_existing_readings(site_id): 
   site_ids = [site_id]
   today = datetime.today()
-  start_date = today - timedelta(days = 90) 
+  start_date = today - timedelta(days = 365)
   readings = db.session.query(Reading.rdate, Reading.total_kwh).filter(Reading.device_id.in_(site_ids)).filter(Reading.rdate >= start_date).order_by(Reading.rdate).all()
   df = pd.DataFrame(readings, columns = DF_COLUMNS[:-1])
-  df['rdate'] = df['rdate'].astype(str).apply(lambda x : int((datetime.strptime(x, "%Y-%m-%d %H:%M:%S") - epoch).total_seconds()))
+  df['date'] = pd.to_datetime(df['date'])
+  df['date'] = df['date'].apply(lambda x : (datetime(x.year, x.month, x.day, x.hour) - epoch).total_seconds())
   df['reading_type'] = 'ACTUAL'
   df['metric'] = df['metric'].diff()
-  return df.iloc[1:]
+  df.iloc[0]['metric'] = df.iloc[1]['metric']
+
+  df.to_csv("./kwh.csv", index = False)
+  weather = db.session.query(Weather.wdate, Weather.temp).filter(Weather.device_id.in_(site_ids)).filter(Weather.wdate >= start_date).order_by(Weather.wdate).all()
+  wdf = pd.DataFrame(weather, columns = ["date", "temperature"])
+  wdf['date'] = pd.to_datetime(wdf['date'])
+  wdf['date'] = wdf['date'].apply(lambda x : (datetime(x.year, x.month, x.day, x.hour) - epoch).total_seconds())
+  wdf['weather_type'] = 'ACTUAL'
+  wdf.to_csv("./weather.csv", index = False)
+  opdf = pd.merge(df, wdf, on = 'date')
+  return opdf
 
 def _predict(site_id, df):
-  x = df['rdate'].values
-  y = df.metric.values
+  #x = df['date'].values
+  #y = df.metric.values
 
-  slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
-  print(slope, intercept, r_value, p_value, std_err)
+  #slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+  #print(slope, intercept, r_value, p_value, std_err)
 
-  start_pred_epoch = df['rdate'].max() + 5 #PREDICT VALUES EVERY 5 SECONDS
+  start_pred_epoch = df['date'].max() + 3600 #PREDICT VALUES EVERY 1 hour    
   today = datetime.today()
   end_pred_epoch = int((datetime(today.year, today.month, MAX_DAYS[today.month]) - epoch).total_seconds()*1)
-  time_steps = [dep for dep in range(start_pred_epoch, end_pred_epoch, 5)]
+  time_steps = [dep for dep in range(start_pred_epoch, end_pred_epoch, 3600)]
 
-  new_df = pd.DataFrame(time_steps, columns = ['rdate']) 
+  new_df = pd.DataFrame(time_steps, columns = ['date']) 
   new_df['reading_type'] = 'PREDICTION'
-  new_df['metric'] = slope * new_df['rdate'] + intercept
+  new_df['metric'] = slope * new_df['date'] + intercept
 
   op_df = pd.concat([df, new_df]) 
   op_df = op_df.reset_index(drop = True)
-  return op_df, df['rdate'].max().item()
+  return op_df, df['date'].max().item()
 
 def _process_df(df1, aps, sd, ed):
   print(sd, ed)
-  df = df1[(df1['rdate']>=sd) & (df1['rdate']<ed)]
-  pmin, pmax = df.rdate.min(), df.rdate.max()
+  df = df1[(df1['date']>=sd) & (df1['date']<ed)]
+  pmin, pmax = df.date.min(), df.date.max()
   prange = []
 
   try:
@@ -72,15 +83,15 @@ def _process_df(df1, aps, sd, ed):
     print("Empty DF")
     return pd.DataFrame()
 
-  df.rdate = df.rdate.apply(lambda epoch_diff : epoch + timedelta(seconds = epoch_diff))
-  df.rdate = pd.to_datetime(df.rdate)
-  df = df.set_index('rdate')
-  df = df.groupby(pd.Grouper(freq='{}Min'.format(aps))).aggregate(np.sum) #df.groupby(pd.cut(df.rdate, np.arange(sd, ed, agg_period))).sum()
-  df['rdate'] = df.index.tolist() #df.index.values]
-  df['rdate'] = df.rdate.apply(lambda rd : (rd - epoch).total_seconds())
+  df.date = df.date.apply(lambda epoch_diff : epoch + timedelta(seconds = epoch_diff))
+  df.date = pd.to_datetime(df.date)
+  df = df.set_index('date')
+  df = df.groupby(pd.Grouper(freq='{}Min'.format(aps))).aggregate(np.sum) #df.groupby(pd.cut(df.date, np.arange(sd, ed, agg_period))).sum()
+  df['date'] = df.index.tolist() #df.index.values]
+  df['date'] = df.date.apply(lambda rd : (rd - epoch).total_seconds())
   df = df.reset_index(drop = True)
   print(df.head())
-  return df[['rdate', 'metric']] 
+  return df[['date', 'metric']] 
 
 def _group_by_period(df, predict_for, aps):
   today = datetime.today()
@@ -102,11 +113,11 @@ def _group_by_period(df, predict_for, aps):
   pred_df = _process_df(df, aps, r3, r4) 
 
   op_df = pd.concat([past_df, current_df, pred_df])
-  op_df = op_df.sort_values(by=["rdate"])
+  op_df = op_df.sort_values(by=["date"])
   op_df = op_df.reset_index(drop = True)
 
-  graph_cut1 = op_df[op_df['rdate']>=r2]['rdate'].idxmin()
-  graph_cut2 = op_df[op_df['rdate']>=r3]['rdate'].idxmin()
+  graph_cut1 = op_df[op_df['date']>=r2]['date'].idxmin()
+  graph_cut2 = op_df[op_df['date']>=r3]['date'].idxmin()
   return op_df, graph_cut1.item(), graph_cut2.item()
 
 def get_predictions_chart(site_id, predict_for, agg_period): #, chart_type):
