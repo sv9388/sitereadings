@@ -1,7 +1,7 @@
-{% extends 'app_layout.html' %}
+{% extends 'graph_page_base.html' %}
 {% from "_formhelpers.html" import render_field %}
 
-{% block pagecontent %}
+{% block graphcontent %}
 <div class="row">
   <div class="button-list">
     <button type="button" class="btn btn-success waves-effect waves-light" data-toggle="modal" data-target="#customisechartmodal">Customise Chart</button>
@@ -21,19 +21,26 @@
       <form class="form" method="post" action="{{url_for('compare_sites')}}">
 
       <div class="modal-body">
-          <div class="row">{{ render_field(form.site_ids, "form-control multi-select", customprops = {"data-plugin" : "multiselect", "data-selectable-optgroup" : "true"}, colsize= 12)}}</div>
-          <div class="row"> {{ render_field(form.metric, "form-control", colsize = 6)}} {{ render_field(form.chart_type, "form-control", colsize = 6)}}</div>
-          <div>{{ render_field(form.date_range, "form-control", customprops = {"id" : "firstreportrange" }, colsize = 12) }}</div>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#taggroupings" aria-expanded="false" aria-controls="taggroupings">Compare by Tags</button>
+          <div class="collapse" id="taggroupings" class="card card-body"> <!-- TODDO -->
+            <span> {{ render_field(form.tag1, "form-control",  colsize = 6) }}</span><span> {{ render_field(form.tag2, "form-control",  colsize = 6) }}</span>
+          </div>
+
+          {{ render_field(form.site_ids, "form-control multi-select", customprops = {"data-plugin" : "multiselect", "data-selectable-optgroup" : "true"}, colsize= 12)}}
+          {{ render_field(form.metric, "form-control", colsize = 12)}} 
+          {{ render_field(form.chart_type, "form-control", colsize = 12)}}
+          {{ render_field(form.date_range, "form-control", customprops = {"id" : "firstreportrange" }, colsize = 12) }}
           <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#sdr" aria-expanded="false" aria-controls="sdr">Compare against timerange</button>
           <div class="collapse" id="sdr" class="card card-body">
             <div>{{ render_field(form.date_range2, "form-control", customprops = {"id" : "secondreportrange"}, colsize = 12) }}</div>
           </div>
 
-          <div>{{ render_field(form.aggregate_unit, "form-control", colsize = 12)}}</div>
+          {{ render_field(form.aggregate_unit, "form-control", colsize = 12)}}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Discard</button>
-        <button type="submit" class = "btn btn-success">Get Chart</button>
+        <button type="submit" class = "btn btn-success"  onclick = "$('#loading').show(); $('#loadedcontent').hide(); return true;">Get Chart</button>
       </div>
 
       </form>
@@ -42,7 +49,7 @@
 </div>
 {% endblock %}
 
-{% block customscripts %}
+{% block graphscripts %}
 <script type="text/javascript">
   var chart = null;
   if(chart != null){ chart.destroy(); }

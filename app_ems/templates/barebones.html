@@ -17,23 +17,29 @@
     <link href="{{url_for('static', filename = 'plugins/bootstrap-daterangepicker/daterangepicker.css')}}" rel="stylesheet">
     <link href="{{url_for('static', filename = 'assets/css/icons.css')}}" rel="stylesheet" type="text/css">
     <link href="{{url_for('static', filename = 'assets/css/style.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{url_for('static', filename = 'plugins/jstree/style.css')}}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bokeh/0.12.16/bokeh.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bokeh/0.12.16/bokeh-widgets.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
     <script src="{{url_for('static', filename = 'assets/js/modernizr.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/js/jquery.min.js')}}"></script>
     <title>POWERSINES</title>
     <style> .daterange { width: 250px !important; } </style>
+
   </head>
 
 
   <body class="fixed-left">
+   <div align="center" id="loading" style="display:none;"><img src="{{url_for('static', filename = 'loading.gif')}}" alt="" /></div>
+   <div id="loadedcontent">
+
     {% block actual_layout %}{% endblock %} 
- 
+    </div>
     <script>
       var resizefunc = [];
     </script>
 
     <!-- Plugins  -->
-    <script src="{{url_for('static', filename = 'assets/js/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename = 'assets/js/popper.min.js')}}"></script><!-- Popper for Bootstrap -->
     <script src="{{url_for('static', filename = 'assets/js/bootstrap.min.js')}}"></script>
     <script src="{{url_for('static', filename = 'assets/js/detect.js')}}"></script>
@@ -52,6 +58,8 @@
     <script src="{{url_for('static', filename = 'plugins/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
     <script src="{{url_for('static', filename = 'plugins/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
     <script src="{{url_for('static', filename = 'assets/pages/jquery.form-advanced.init.js')}}"></script>
+    <script src="{{url_for('static', filename = 'plugins/jstree/jstree.min.js')}}"></script>
+    <script src="{{url_for('static', filename = 'assets/pages/jquery.tree.js')}}"></script>
 
     <script src="{{url_for('static', filename = 'plugins/datatables/jquery.dataTables.min.js')}}"></script>
     <script src="{{url_for('static', filename = 'plugins/datatables/dataTables.bootstrap4.min.js')}}"></script>
@@ -98,12 +106,7 @@
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bokeh/0.12.16/bokeh.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bokeh/0.12.16/bokeh-widgets.js"></script>
-  <script type="text/javascript">// <![CDATA[
-    function loading(){
-      $("#loading").show();
-      $("#content").hide();
-    }
-   // ]]></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
   <script type="text/javascript">
     toastr.options = {
     "closeButton": true,
@@ -123,8 +126,8 @@
     "hideMethod": "fadeOut"
     };
     console.log("{{errors}}");
-    {% if errors | length > 0 %}
-    toastr["error"]("{{errors}}");
+    {% if notif | length > 0 %}
+    toastr["{{notif[0]}}"]("{{notif[1]}}");
     {% endif %}
   </script>
   <script>
@@ -174,7 +177,5 @@ function jQFormSerializeArrToJson(formSerializeArr){
 }
   </script>
   {% block customscripts %}{% endblock %}
-
-
   </body>
 </html>

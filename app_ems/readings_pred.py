@@ -52,13 +52,13 @@ def _get_existing_readings(site_id):
   return opdf
 
 def _predict(site_id, df):
-  #x = df['date'].values
-  #y = df.metric.values
+  x = df['date'].values
+  y = df.metric.values
 
-  #slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
+  slope, intercept, r_value, p_value, std_err = stats.linregress(x,y)
   #print(slope, intercept, r_value, p_value, std_err)
 
-  start_pred_epoch = df['date'].max() + 3600 #PREDICT VALUES EVERY 1 hour    
+  start_pred_epoch = int(df['date'].max().item() + 3600) #PREDICT VALUES EVERY 1 hour    
   today = datetime.today()
   end_pred_epoch = int((datetime(today.year, today.month, MAX_DAYS[today.month]) - epoch).total_seconds()*1)
   time_steps = [dep for dep in range(start_pred_epoch, end_pred_epoch, 3600)]

@@ -1,9 +1,18 @@
 from flask_security import RoleMixin, UserMixin
+from passlib.apps import custom_app_context as pwd_context
+from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
+from flask_security import RoleMixin, UserMixin
 from sqlalchemy import extract, func
 from sqlalchemy.schema import UniqueConstraint, CheckConstraint
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from app import db
+
+emsusers_devices = db.Table(
+  'emsusers_devices',
+  db.Column('emsuser_id', db.Integer(), db.ForeignKey('emsuser.id')),
+  db.Column('device_id', db.Integer(), db.ForeignKey('device.id'))
+)
 
 class Role(db.Model, RoleMixin):
   id = db.Column(db.Integer(), primary_key=True)
@@ -17,9 +26,10 @@ class Role(db.Model, RoleMixin):
 
 class Emsuser(db.Model):
   def hash_password(self, password):
-    self.password = pwd_context.encrypt(password)
+      self.password = pwd_context.encrypt(password)
 
   def verify_password(self, password):
+    print(password)
     return pwd_context.verify(password, self.password)
 
   def generate_auth_token(self, expiration=3600):
@@ -73,8 +83,9 @@ class Device(db.Model):
   sqm = db.Column(db.Integer) #, nullable = False)
   latitude = db.Column(db.Float)
   longitude = db.Column(db.Float)
-  user_id = db.Column(db.Integer, db.ForeignKey("emsuser.id"))
-  user = db.relationship('Emsuser', backref = db.backref("devices", cascade="all,delete"), lazy = True)
+  #user_id = db.Column(db.Integer, db.ForeignKey("emsuser.id"))
+  #user = db.relationship('Emsuser', backref = db.backref("devices", cascade="all,delete"), lazy = True)
+  users = db.relationship('Emsuser', secondary = emsusers_devices, backref = db.backref('devices', lazy = 'dynamic'))
   __table_args__ = (CheckConstraint('sqm > 0', name='Sq/m must be positive'),)
 
 class Reading(db.Model):
@@ -96,8 +107,3 @@ class Weather(db.Model):
   device_id = db.Column(db.Integer, db.ForeignKey("device.id"))
   device_assosciated = db.relationship("Device", backref = db.backref('weather')) #, lazy = 'joined', cascade = "all, delete-orphan"), uselist = False)
   __table_args__ = (UniqueConstraint('wdate', 'device_id', name='_date_device_weather_uc'), )
-
-class CrawlLimits(db.Model):
-  id = db.Column(db.Integer, primary_key = True)
-  table_key = db.Column(db.String(10), nullable = False, unique = True)
-  date_limit = db.Column(db.DateTime, nullable = False)

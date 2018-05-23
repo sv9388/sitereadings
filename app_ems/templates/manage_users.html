@@ -10,9 +10,12 @@
             <div class="fb-text form-group"><label for="email" class="fb-text-label">Email<span class="fb-required">*</span></label><input type="email" class="form-control" name="email" required="required"></div>
             <div class="fb-text form-group"><label for="password" class="fb-text-label">Password<span class="fb-required">*</span></label><input type="password" class="form-control" name="password" required="required"></div>
             <div class="fb-text form-group"><label for="confirm_password" class="fb-text-label">Confirm Password<span class="fb-required">*</span></label><input type="password" class="form-control" name="confirm_password" required="required"></div>
-            <div class="fb-text form-group"><label for="name" class="fb-text-label">Email<span class="fb-required">*</span></label><input type="name" class="form-control" name="name" required="required"></div>
-            <div class="fb-text form-group"><label for="surname" class="fb-text-label">Email<span class="fb-required">*</span></label><input type="surname" class="form-control" name="surname" required="required"></div>
-            <div class="fb-text form-group"><label for="role" class="fb-text-label">Role<span class="fb-required">*</span></label><input type="text" class="form-control roledropdown" name="role" required="required"></div>
+            <div class="fb-text form-group"><label for="name" class="fb-text-label">First Name<span class="fb-required">*</span></label><input type="name" class="form-control" name="name" required="required"></div>
+            <div class="fb-text form-group"><label for="surname" class="fb-text-label">Surname<span class="fb-required">*</span></label><input type="surname" class="form-control" name="surname" required="required"></div>
+            <div class="fb-select form-group field-role">
+              <label for="role" class="fb-select-label">Role<span class="fb-required">*</span></label>
+              <select class="form-control roledropdown" name="role" required="required" aria-required="true"></select>
+            </div>
           </div>
         </form>
       </div>
@@ -57,7 +60,10 @@
             <div class="fb-text form-group"><label for="confirm_password" class="fb-text-label">Confirm Password<span class="fb-required">*</span></label><input type="password" class="form-control" name="confirm_password" required="required"></div>
             <div class="fb-text form-group"><label for="name" class="fb-text-label">Email<span class="fb-required">*</span></label><input type="name" class="form-control" name="name" required="required"></div>
             <div class="fb-text form-group"><label for="surname" class="fb-text-label">Email<span class="fb-required">*</span></label><input type="surname" class="form-control" name="surname" required="required"></div>
-            <div class="fb-text form-group"><label for="role" class="fb-text-label">Role<span class="fb-required">*</span></label><input type="text" class="form-control" name="role" required="required"></div>
+            <div class="fb-select form-group field-role">
+              <label for="role" class="fb-select-label">Role<span class="fb-required">*</span></label>
+              <select class="form-control roledropdown" name="role" required="required" aria-required="true"></select>
+            </div>
           </div>
         </form>
       </div>
@@ -85,6 +91,7 @@
             <th>First Name</th>
             <th>Last Name</th>
             <th>Role</th>
+            <th>Devices</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -100,7 +107,7 @@ $(document).ready(function() {
     var emsusers_table =  $('#emsusersdt').DataTable( {
         "ajax": {url : '/api/emsuser', dataSrc: "objects"},
         "columns" : [
-          {data: "id", visible: false, searchable: true}, {data: "email"}, {data: "name"}, {data: "surname"}, {data: "role.name"},
+          {data: "id", visible: false, searchable: true}, {data: "email"}, {data: "name"}, {data: "surname"}, {data: "role.name"}, {data: "devices[, ].device_id"},
          {
           title: "Actions",
           sortable: false,
@@ -121,7 +128,7 @@ $(document).ready(function() {
     var response = post_or_put_data("/api/emsuser/" + emsuser_id , "PATCH", data);
     response = JSON.parse(response.responseText);
     if (response.hasOwnProperty("id")) {
-      var table_idx = $(this).attr('tblrowidx');
+      var table_idx = Number($(this).attr('tblrowidx'));
       console.log(table_idx, typeof(table_idx));
       emsusers_table = $('#emsusersdt').DataTable();
       emsusers_table.row(table_idx).data(response);
@@ -139,30 +146,26 @@ $(document).ready(function() {
     modal.find('#editemsuserbutton').attr('buttonemsuser_id', recipient);
 
     emsusers_table = $('#emsusersdt').DataTable();
-    index = emsusers_table.column(0).data().filter(function(v, i){ return v == Number(recipient);})[0];
-    modal.find('#editemsuserbutton').attr('tblrowidx', index);
+    var idx = emsusers_table.column().data().indexOf(Number(recipient));
+    modal.find('#editemsuserbutton').attr('tblrowidx', idx);
+
+    var oldData = get_or_delete_data("/api/emsuser/"+recipient, "GET");
+    var form = $("#edit_emsuser_form :input");
 
     var roles = get_or_delete_data("/api/role", "GET");
-    roles = JSON.parse(roles.responseText);
-    $('.roledropdown').empty();
-    $.each(roles, function(i, d) {
-      $('.roledropdown').append('<option value="' + d.id + '">' + d.name + '</option>');
-    });
-    
-    var oldData = get_or_delete_data("/api/emsuser/"+recipient, "GET");
-    oldData = JSON.parse(oldData.responseText);
-    var form = $("#edit_emsuser_form :input");
-    roles = JSON.parse(roles.responseText);
+    roles = roles.objects;
     var old_selected = oldData.role.id;
     $('.roledropdown').empty();
     $.each(roles, function(i, d) {
       var selected = i == old_selected?"selected":"";
-      $('.roledropdown').append('<option value="' + d.id + '" '+ selected + '>' + d.name + '</option>' );
+      $('.roledropdown').append('<option value="' + d.id + '">' + d.name + '</option>');
     });
 
     form[0].value = oldData.email;
     form[3].value = oldData.name;
     form[4].value = oldData.surname;
+    var devices = oldData.devices;
+    form[5].value = devices.map(v => v.device_id).join(", ");
   });
 
   $('#deleteemsuserbutton').on('click', function(e) {
@@ -185,15 +188,11 @@ $(document).ready(function() {
     var modal = $(this);
     modal.find('#deleteemsuserbutton').attr('buttonemsuser_id', recipient);
     emsusers_table = $('#emsusersdt').DataTable();
-    var a = emsusers_table.data();
-    var op = a.map(function(v, i){ if(v.id.toString() == recipient.toString()){return i}}).filter(function(v){ if(v != null){return v; }});
-    if(op.length>=0){
-      var data = a[op[0]];
-      modal.find('#deleteemsuserbutton').attr('tblrowidx', op[0]);
-      var ips = $('#delete_emsuser_form [name]');
-      for (var i = 0; i < ips.length; i++) {
-        ips[i].value = data[ips[i].name];
-      }
+    var idx = emsusers_table.column().data().indexOf(Number(recipient));
+    modal.find('#deleteemsuserbutton').attr('tblrowidx', idx);
+    var ips = $('#delete_emsuser_form [name]');
+    for (var i = 0; i < ips.length; i++) {
+      ips[i].value = data[ips[i].name];
     }
   });
 
@@ -201,8 +200,6 @@ $(document).ready(function() {
     e.preventDefault();
     var emsuser_id = $(this).attr('buttonemsuser_id');
     var data = $("#add_emsuser_form").serializeArray();  console.log(data);
-    data.push({name: "user_id", value: {{user.id}} });
-    data.push({name: "is_active", value: true});
     var data = jQFormSerializeArrToJson(data);
     console.log(data);
     var response = post_or_put_data("/api/emsuser" , "POST", data);
@@ -215,6 +212,15 @@ $(document).ready(function() {
       toastr['warning']("Internal error! Try again or contact admin!");
     }
     $('#addemsusermodal').modal('hide');
+  });
+
+  $('#addemsusermodal').on('show.bs.modal', function(event) {
+    var roles = get_or_delete_data("/api/role", "GET");
+    roles = roles.objects;
+    $('.roledropdown').empty();
+    $.each(roles, function(i, d) {
+      $('.roledropdown').append('<option value="' + d.id + '">' + d.name + '</option>');
+    });
   });
 
 </script>

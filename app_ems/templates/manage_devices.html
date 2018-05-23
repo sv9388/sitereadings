@@ -7,16 +7,17 @@
       <div class="modal-body">
         <form id="add_device_form">
           <div class="rendered-form">
-            <div class="fb-text form-group"><label for="device_id" class="fb-text-label">Site ID<span class="fb-required">*</span></label><input type="text" class="form-control" name="device_id" id="device_id" required="required" readonly></div>
+            <div class="fb-text form-group"><label for="device_id" class="fb-text-label">Site ID<span class="fb-required">*</span></label><input type="text" class="form-control" name="device_id" id="device_id" required="required" ></div>
             <div class="fb-text form-group"><label for="distributer_name" class="fb-text-label">Distributer Name<span class="fb-required">*</span></label><input type="text" class="form-control" name="distributer_name" id="distributer_name" required="required"></div>
             <div class="fb-text form-group"><label for="project" class="fb-text-label">Project<span class="fb-required">*</span></label><input type="text" class="form-control" name="project" id="project" required="required"></div>
             <div class="fb-text form-group"><label for="system_name" class="fb-text-label">System Name<span class="fb-required">*</span></label><input type="text" class="form-control" name="system_name" id="system_name" required="required"></div>
             <div class="fb-text form-group"><label for="country" class="fb-text-label">Country<span class="fb-required">*</span></label><input type="text" class="form-control" name="country" id="country" required="required"></div>
-            <div class="fb-text form-group"><label for="tag_site_type" class="fb-text-label">Tags (Site types) as comma separated text<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_site_type" id="tag_site_type" required="required"></div>
-            <div class="fb-text form-group"><label for="tag_size" class="fb-text-label">Tags (Size) as comma separated text<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_size" id="tag_size" required="required"></div>
+            <div class="fb-text form-group"><label for="tag_site_type" class="fb-text-label">Tags (Site types)<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_site_type" id="tag_site_type" required="required"></div>
+            <div class="fb-text form-group"><label for="tag_size" class="fb-text-label">Tags (Size)<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_size" id="tag_size" required="required"></div>
             <div class="fb-text form-group"><label for="sqm" class="fb-text-label">Site Sqm<span class="fb-required">*</span></label><input type="text" class="form-control" name="sqm" id="sqm" required="required"></div>
             <div class="fb-text form-group"><label for="latitude" class="fb-text-label">Latitude<span class="fb-required">*</span></label><input type="text" class="form-control" name="latitude" id="latitude" required="required"></div>
             <div class="fb-text form-group"><label for="longitude" class="fb-text-label">Longitude<span class="fb-required">*</span></label><input type="text" class="form-control" name="longitude" id="longitude" required="required"></div>
+            <div class="fb-select form-group field-emsusers"><label for="emsusers" class="fb-select-label">Users of device<span class="fb-required">*</span></label><select class="selectpicker" name = "users" multiple='true' data-live-search='true'></select></div>
           </div>
         </form>
       </div>
@@ -60,11 +61,12 @@
             <div class="fb-text form-group"><label for="project" class="fb-text-label">Project<span class="fb-required">*</span></label><input type="text" class="form-control" name="project" id="project" required="required"></div>
             <div class="fb-text form-group"><label for="system_name" class="fb-text-label">System Name<span class="fb-required">*</span></label><input type="text" class="form-control" name="system_name" id="system_name" required="required"></div>
             <div class="fb-text form-group"><label for="country" class="fb-text-label">Country<span class="fb-required">*</span></label><input type="text" class="form-control" name="country" id="country" required="required"></div>
-            <div class="fb-text form-group"><label for="tag_site_type" class="fb-text-label">Tags (Site types) as comma separated text<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_site_type" id="tag_site_type" required="required"></div>
-            <div class="fb-text form-group"><label for="tag_size" class="fb-text-label">Tags (Size) as comma separated text<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_size" id="tag_size" required="required"></div>
+            <div class="fb-text form-group"><label for="tag_site_type" class="fb-text-label">Tags (Site types)<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_site_type" id="tag_site_type" required="required"></div>
+            <div class="fb-text form-group"><label for="tag_size" class="fb-text-label">Tags (Size)<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_size" id="tag_size" required="required"></div>
             <div class="fb-text form-group"><label for="sqm" class="fb-text-label">Site Sqm<span class="fb-required">*</span></label><input type="text" class="form-control" name="sqm" id="sqm" required="required"></div>
             <div class="fb-text form-group"><label for="latitude" class="fb-text-label">Latitude<span class="fb-required">*</span></label><input type="text" class="form-control" name="latitude" id="latitude" required="required"></div>
             <div class="fb-text form-group"><label for="longitude" class="fb-text-label">Longitude<span class="fb-required">*</span></label><input type="text" class="form-control" name="longitude" id="longitude" required="required"></div>
+            <div class="fb-select form-group field-emsusers"><label for="emsusers" class="fb-select-label">Users of device<span class="fb-required">*</span></label><select class="selectpicker" name = "users" multiple data-live-search='true'></select></div>
           </div>
         </form>
       </div>
@@ -98,6 +100,7 @@
             <th>Sqm of the Building</th>
             <th>Latitude</th>
             <th>Longitude</th>
+            <th>Users of Device</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -109,11 +112,20 @@
 
 {% block customscripts %}
 <script>
+
+var url_base = "/api/device";
+{% if user.role.id == 1 %}
+  var device_url = "/api/device";
+{% else %}
+  var filters = [{"name":"user_id","op":"==","val":{{user.id | safe}}}];
+  var params = JSON.stringify({"filters":filters});
+  var device_url = "/api/device?q=" + params;
+{% endif %}
 $(document).ready(function() {
     var devices_table =  $('#devicesdt').DataTable( {
-        "ajax": {url : '/api/device', dataSrc: "objects"},
+        "ajax": {url : device_url, dataSrc: "objects"},
         "columns" : [
-          {data: "id", visible: false, searchable: true}, {data: "device_id"}, {data: "distributer_name"}, {data: "project"}, {data: "system_name"}, {data: "country"}, {data: "tag_site_type"}, {data: "tag_size"}, {data: "sqm"}, {data: "latitude"}, {data: "longitude"},
+          {data: "id", visible: false, searchable: true}, {data: "device_id"}, {data: "distributer_name"}, {data: "project"}, {data: "system_name"}, {data: "country"}, {data: "tag_site_type"}, {data: "tag_size"}, {data: "sqm"}, {data: "latitude"}, {data: "longitude"},  {data: "users[,].email"},
          {
           title: "Actions",
           sortable: false,
@@ -123,15 +135,31 @@ $(document).ready(function() {
           }
         }]
     });
-});
 
+    var users = get_or_delete_data('/api/emsuser', "GET"); 
+    var data = users.objects;
+    var options;
+    for(var i = 0; i < data['length']; i++) {
+        options += "<option value='" + data[i]['id'] + "'>" + data[i]['email'] + "</option>";
+    }
+    $(".selectpicker").append(options);
+    $(".selectpicker").selectpicker('refresh');
+    $(".selectpicker").selectpicker('val', "{{user.id}}");
+});
 
   $('#editdevicebutton').on('click', function(e) {
     e.preventDefault();
     var device_id = $(this).attr('buttondevice_id');
-    var data = jQFormSerializeArrToJson($("#edit_device_form").serializeArray());
+    var data = $("#edit_device_form").serializeArray();
+    var names = data.filter(v => v.name == "users").map((v, i) => { var op = {}; op.id = Number(v.value); return op; });
+    data = data.filter(v => v.name != "users");
+    data.push({name : "users", value : names}); console.log(data);
+    //data.push({name: "user_id", value: {{user.id}} });
+    //data.push({name: "is_active", value: true});
+
+    var data = jQFormSerializeArrToJson(data)
     console.log(data);
-    var response = post_or_put_data("/api/device/" + device_id , "PATCH", data);
+    var response = post_or_put_data(url_base + "/" + device_id , "PATCH", data);
     response = JSON.parse(response.responseText);
     if (response.hasOwnProperty("id")) {
       var table_idx = $(this).attr('tblrowidx');
@@ -155,11 +183,20 @@ $(document).ready(function() {
     var op = a.map(function(v, i){ if(v.id.toString() == recipient.toString()){return i}}).filter(function(v){ if(v != null){return v; }});
     if(op.length>=0){
       var data = a[op[0]];
+      console.log(data, ips);
       modal.find('#editdevicebutton').attr('tblrowidx', op[0]);
       var ips = $('#edit_device_form [name]');
       for (var i = 0; i < ips.length; i++) {
-        ips[i].value = data[ips[i].name];
+        if(ips[i].name == "users"){
+          var arr = data['users'].map(v => v.id);
+          ips[i].value = arr.join(",");
+          $(".selectpicker").selectpicker('val', arr); 
+        }
+        else{
+          ips[i].value = data[ips[i].name];
+        }
       }
+      
     }
   });
 
@@ -168,7 +205,7 @@ $(document).ready(function() {
     var device_id = $(this).attr('buttondevice_id');
     var data = jQFormSerializeArrToJson($("#delete_device_form").serializeArray());
     console.log(data);
-    var response = get_or_delete_data("/api/device/" + device_id , "DELETE");
+    var response = get_or_delete_data(url_base +"/" + device_id , "DELETE");
       var table_idx = Number($(this).attr('tblrowidx'));
   
       console.log(table_idx, typeof(table_idx));
@@ -198,12 +235,15 @@ $(document).ready(function() {
   $('#adddevicebutton').on('click', function(e) {
     e.preventDefault();
     var device_id = $(this).attr('buttondevice_id');
-    var data = $("#add_device_form").serializeArray();  console.log(data);
-    data.push({name: "user_id", value: {{user.id}} });
+    var data = $("#add_device_form").serializeArray();
+    var names = data.filter(v => v.name == "users").map((v, i) => { var op = {}; op.id = Number(v.value); return op; });  
+    data = data.filter(v => v.name != "users");
+    data.push({name : "users", value : names}); console.log(data);
+    //data.push({name: "user_id", value: {{user.id}} });
     data.push({name: "is_active", value: true});
     var data = jQFormSerializeArrToJson(data);
     console.log(data);
-    var response = post_or_put_data("/api/device" , "POST", data);
+    var response = post_or_put_data(url_base , "POST", data);
     response = JSON.parse(response.responseText);
     if (response.hasOwnProperty("id")) {
       devices_table = $('#devicesdt').DataTable();

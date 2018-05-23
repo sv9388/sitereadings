@@ -1,20 +1,19 @@
 from wtforms import SelectField, Form, validators, SubmitField, DateTimeField, StringField, SelectField, PasswordField
 from flask_wtf import FlaskForm
 from enums import *
-from models import Device
+from models import Device, Emsuser
 from datetime import datetime, timedelta
 import random
 from optgroup_select_field import OptgroupSelectWidget, OptgroupSelectField, OptgroupSelectMultipleField
 from login_utils import current_user
 
 class LoginForm(FlaskForm):
-  email = StringField('Email', validators = [validators.DataRequired()])
-  password = PasswordField('Password', validators = [validators.DataRequired()])
+  email = StringField('Email', validators = [validators.DataRequired()], render_kw = {'placeholder' : "Email"})
+  password = PasswordField('Password', validators = [validators.DataRequired()], render_kw = {'placeholder' : "Password"})
 
-class EditProfileForm(FlaskForm):
+class EditProfileForm(Form):
   email = StringField('Email', render_kw={'readonly': True})
   password = PasswordField('New Password', [
-        validators.DataRequired(),
         validators.EqualTo('confirm_password', message='Passwords must match')
     ])
   confirm_password = PasswordField('Repeat Password')
@@ -25,13 +24,16 @@ class EditProfileForm(FlaskForm):
   def __init__(self, *args, **kwargs):
     super(EditProfileForm, self).__init__(*args, **kwargs)
     prf_user = None
-    if current_user.is_authenticated:
-        prf_user = current_user.get_id() # return username in get_id()
+    print(current_user.is_authenticated(), current_user.get_id())
+    if current_user.is_authenticated():
+        email = current_user.get_id() # return username in get_id()
+        prf_user = Emsuser.query.filter(Emsuser.email == email).first()
         print(prf_user)
-        self.email.default = prf_user.email
-        self.name.default = prf_user.name
-        self.surname.default = prf_user.surname
-        self.role.default = prf_user.role.name
+        self.email.data = prf_user.email
+        self.name.data = prf_user.name
+        self.surname.data = prf_user.surname
+        self.role.data = prf_user.role.name
+    print(self.email.data, self.email.default)
 
 class PredictionForm(Form):
   #site_ids = OptgroupSelectMultipleField("Site Ids", [validators.DataRequired()], coerce = int)
@@ -50,7 +52,9 @@ DEFAULT_DATESTR = "{} - {}".format((datetime.today() - timedelta(days = 7)).strf
 class CustomSitesForm(Form):
   metric = SelectField("Metric", [validators.DataRequired()], choices = [("total_kwh", "KwH"), ("kwh_psqm", "Kwh/SqM")], default = "total_kwh")
   chart_type = SelectField("Chart Type", [validators.DataRequired()],  choices = [(BAR , "Bar"), (LINE , "Line"), (COLUMN , "Column") ], default = COLUMN)
-  site_ids = OptgroupSelectMultipleField("Site Ids", [validators.DataRequired()], coerce = int, default = [1, 2, 3, 4, 5])
+  site_ids = OptgroupSelectMultipleField("Site Ids", [validators.Optional()], coerce = int, default = [1, 2, 3, 4, 5])
+  tag1 = SelectField("First Tag", [validators.Optional()], coerce = str)
+  tag2 = SelectField("Second Tag", [validators.Optional()], coerce = str)
   date_range = StringField("Date Range", [validators.DataRequired()], default = DEFAULT_DATESTR)
   date_range2 = StringField("Second Date Range", [validators.Optional()], default = "")
   aggregate_unit = SelectField("Aggregate Period", [validators.Optional()], coerce = int, choices = [(FIFTEEN_MINUTES, "15 Minutes"), (HOURLY, "Hourly"), (DAILY, "Daily")], default = DAILY)
@@ -65,8 +69,11 @@ class CustomSitesForm(Form):
       cdict[x] = tuple([(d.id, d.device_id) for d in device_records if d.tag_size == x])
     for x in site_types:
       cdict[x] = tuple([(d.id, d.device_id) for d in device_records if d.tag_site_type == x])
-
     self.site_ids.choices = tuple(cdict.items())
+    tags = list(cdict.keys())
+    tags = [(x if x else "None", x if x else "Untagged") for x in tags]
+    self.tag1.choices = tags
+    self.tag2.choices = tags
 
 class DeepDiveForm(FlaskForm):
   site_id = SelectField("Site Id", coerce = int)

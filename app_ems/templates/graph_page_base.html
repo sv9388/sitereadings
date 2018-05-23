@@ -1,0 +1,54 @@
+{% extends 'app_layout.html' %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block pagecontent %}
+<div class = "row">
+  <div class = "col-lg-3">
+   <div id="basicTree"></div>
+  </div>
+  <div class = "col-lg-9">
+    {% block graphcontent %}{% endblock %}
+  </div>
+</div>
+{% endblock %}
+{% block customscripts %}
+<script>
+  var data = get_or_delete_data("/api/devicetree", "GET");
+  var openjson = '{"opened":true}';
+  var typejson = '{"type":"file", "id" : "TEst"}';
+  var html_tree = "<ul>";
+
+  var structured = data["Structured"];
+  console.log(structured);
+  html_tree += `<li data-jstree=${openjson}> Structured Data <ul>`;
+  for(var distributer in structured){
+    html_tree += `<li  data-jstree=${openjson}> ${distributer} <ul>`;
+    for (var project in structured[distributer]){
+      html_tree += `<li  data-jstree=${openjson}> ${project} <ul>`;
+      for (var system_name in structured[distributer][project]){
+        html_tree += `<li  data-jstree=${openjson}> ${system_name} <ul>`;
+        html_tree += structured[distributer][project][system_name].map(v => `<li  data-jstree=${typejson}>${v}</li>`).join("\n");
+        html_tree += "</ul></li>";
+      }
+      html_tree += "</ul></li>";
+    }
+    html_tree += "</ul></li>";
+  }
+  html_tree += "</ul></li>";
+
+  var unstructured = data["Unstructured"];
+  html_tree += `<li data-jstree=${openjson}> Untructured Data <ul>`;
+  for(var tag_type in unstructured){
+    html_tree += `<li  data-jstree=${openjson}> ${tag_type} <ul>`;
+    for(var tag in unstructured[tag_type]){
+      html_tree += `<li  data-jstree=${openjson}> ${tag} <ul>`;
+      html_tree += unstructured[tag_type][tag].map(v => `<li  data-jstree=${typejson}>${v}</li>`).join("\n");
+      html_tree += "</ul></li>";
+    }
+    html_tree += "</ul></li>";
+  }
+  html_tree += "</ul>";  
+  $("#basicTree").append(html_tree);
+</script>
+{% block graphscripts %}{% endblock %}
+{% endblock %}

@@ -1,8 +1,7 @@
 {% from "_formhelpers.html" import render_field %}
-{% extends 'app_layout.html' %}
+{% extends 'graph_page_base.html' %}
 
-
-{% block pagecontent %}
+{% block graphcontent %}
 <div class="row">
   <div class="button-list">
     <a class="btn btn-info waves-effect waves-light" href="{{url_for('compare_sites')}}" target="_blank">Compare Multiple Sites</a>
@@ -25,7 +24,7 @@
           <div class="card-body">
             <form class="form-inline" method="post" action="{{url_for('deep_dive_site')}}">
               {{ render_field(form.site_id, "form-control bsel")}}
-              <button type="submit" class = "btn btn-success" onclick="loading(); return true;" >Get Chart</button>
+              <button type="submit" class = "btn btn-success"  onclick = "$('#loading').show(); $('#loadedcontent').hide(); return true;">Get Chart</button>
             </form>
           </div>
         </div>

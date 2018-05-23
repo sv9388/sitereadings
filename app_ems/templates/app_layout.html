@@ -21,7 +21,7 @@
               </a>
             </li>
             <li class="list-inline-item notification-list">
-              <a class="nav-link waves-light waves-effect" href="#" id="btn-fullscreen">
+              <a class="nav-link waves-light waves-effect" href="{{url_for('logout')}}" id="btn-fullscreen">
                 <i class="mdi mdi-logout"></i> <span>Logout</span>
               </a>
             </li>
@@ -49,10 +49,10 @@
                   <i class="ti-stats-up"></i><span> Monitor Devices </span><span class="menu-arrow"></span>
                 </a>
                 <ul class="list-unstyled">
-                  <li><a href="{{url_for('compare_sites')}}"> Compare multiple sites </a></li>
-                  <li><a href={{url_for('energy_consumption')}}"> Energy Consumption per site </a></li>
-                  <li><a href="{{url_for('deep_dive_site')}}"> Deep Dive Single site </a></li>
-                  <li><a href="{{url_for('predict_readings')}}"> Forecast readings </a></li>
+                  <li><a href="{{url_for('compare_sites')}}" onclick = "$('#loading').show(); $('#loadedcontent').hide(); return true;"> Compare multiple sites </a></li>
+                  <li><a href="{{url_for('energy_consumption')}}"  onclick = "$('#loading').show(); $('#loadedcontent').hide(); return true;"> Energy Consumption per site </a></li>
+                  <li><a href="{{url_for('deep_dive_site')}}" onclick = "$('#loading').show(); $('#loadedcontent').hide(); return true;"> Deep Dive Single site </a></li>
+                  <li><a href="{{url_for('predict_readings')}}" onclick = "$('#loading').show(); $('#loadedcontent').hide(); return true;"> Forecast readings </a></li>
                 </ul>
               </li>
               <li>
@@ -87,7 +87,7 @@
             <div class="row">
               <div class="col-sm-12">
                 <div class="page-title-box">
-                  <h4 class="page-title">Welcome !</h4>
+                  <h4 class="page-title">Welcome {{user.name}} {{user.surname}}!</h4>
                   <ol class="breadcrumb float-right">
                     <li class="breadcrumb-item"><a href="#">Minton</a></li>
                     <li class="breadcrumb-item active">Dashboard</li>
@@ -103,22 +103,10 @@
         </div>
         <!-- end content -->
 
-        <footer class="footer">
-          2016 - 2018 © Minton <span class="hide-phone">- Coderthemes.com</span>
-        </footer>
-
       </div>
       <!-- ============================================================== -->
       <!-- End Right content here -->
       <!-- ============================================================== -->
-
-
-      <!-- Right Sidebar -->
-      <div class="side-bar right-bar">
-        <div class="">
-        </div>
-      </div>
-      <!-- /Right-bar -->
 
     </div>
     <!-- END wrapper -->

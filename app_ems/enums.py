@@ -2,6 +2,10 @@
 QUERY_MSITES = 1
 QUERY_MTIMERANGES = 2
 
+# Data Type
+SITE = 1
+TAG = 2
+
 # Charts
 BAR = "bar"
 LINE = "line"

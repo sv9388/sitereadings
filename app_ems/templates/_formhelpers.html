@@ -1,7 +1,8 @@
-{% macro render_field( field, class_str = "", customprops = {}, colsize = 12 ) %}
-<div class="col-md-{{colsize}}"> 
-  <div class="form-group">
-  {{field.label}} {{field(class_ = class_str, **customprops) | safe }}
+{% macro render_field( field, class_str = "form-control", customprops = {}, colsize = 12 ) %}
+<div class="form-group row">
+  {{field.label(class_ = "col-2 col-form-label")}} 
+  <div class="col-10">
+  {{field(class_ = class_str, **customprops) | safe }}
   {% if field.errors %}
     <ul class=errors>
     {% for error in field.errors %}

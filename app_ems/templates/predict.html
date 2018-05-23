@@ -1,12 +1,10 @@
-{% extends 'app_layout.html' %}
 {% from "_formhelpers.html" import render_field %}
+{% extends 'graph_page_base.html' %}
 
-{% block pagecontent %}
+{% block graphcontent %}
 <div class="row">
   <div class="button-list">
     <button type="button" class="btn btn-success waves-effect waves-light" data-toggle="modal" data-target="#customisechartmodal">Customise Chart</button>
-    <a class="btn btn-info waves-effect waves-light" href="{{url_for('deep_dive_site')}}" target="_blank">Deep Dive One Site ID</a>
-    <a class="btn btn-info waves-effect waves-light" href="{{url_for('compare_sites')}}" target="_blank">Compare Multiple Sites</a>
   </div>
 </div>
 <div align = "center" class="row">
@@ -23,13 +21,14 @@
       <form class="form" method="post" action="{{url_for('predict_readings')}}">
 
       <div class="modal-body">
-          <div class="row">{{ render_field(form.site_id, "form-control", colsize= 12)}}</div>
-          <div class="row"> {{ render_field(form.predict_for_timerange, "form-control", colsize = 6)}}</div><div class="row"> {{ render_field(form.aggregate_unit, "form-control", colsize = 6)}}</div>
-
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          {{ render_field(form.site_id, "form-control", colsize= 12)}}
+          {{ render_field(form.predict_for_timerange, "form-control", colsize = 12)}}
+          {{ render_field(form.aggregate_unit, "form-control", colsize = 12)}}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Discard</button>
-        <button type="submit" class = "btn btn-success">Get Chart</button>
+        <button type="submit" class = "btn btn-success"  onclick = "$('#loading').show(); $('#loadedcontent').hide(); return true;">Get Chart</button>
       </div>
 
       </form>
@@ -38,7 +37,7 @@
 </div>
 {% endblock %}
 
-{% block customscripts %}
+{% block graphscripts %}
 <script type="text/javascript">
   var chart = null;
   if(chart != null){ chart.destroy(); }
