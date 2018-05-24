@@ -18,6 +18,10 @@ from readings_pred import *
 from enums import *
 from forms import *
 
+@app.errorhandler(500):
+def http500(e):
+  return render_template('http_error.html', error_code = 500, error_detail = 'Internal error. Please contact admin'
+
 error_chart = {"chart":{"renderTo":CHART_DIV_ID, "ignoreHiddenSeries" : False}, "title" : {"text" : "Fix errors to populate chart"}, "yAxis":{"labels":{}},"series":[{"data":[]}]}
 
 @app.route("/manage/devices")
