@@ -10,7 +10,7 @@ def perdelta(start, end, delta):
         yield curr.isoformat() + ".000Z"
         curr += delta
 
-def get_dateranges(device_id):
+def get_dateranges(device_id, should_get_all):
   did = None
   conn=psycopg2.connect("dbname='siter' user='powersines' password='powersines' host='powersinesdb.cm6zndedailb.eu-central-1.rds.amazonaws.com'")
 
@@ -31,16 +31,21 @@ def get_dateranges(device_id):
     return None, None
 
   start_date, end_date = None, None
+  if not should_get_all:
+    today = datetime.today()
+    daypart = datetime(today.year, today.month, today.day, 0, 0)
+    return daypart - timedelta(days = 1), daypart
+
   try:
     cur = conn.cursor()
     q = """select max(rdate) from reading where device_id = {}""".format(did)
     print(q)
     cur.execute(q)
     rec = cur.fetchone()
-    start_date = datetime(2017, 1, 1)
-    start_date = rec[0]
+    print(type(rec[0]), rec[0].year, rec[0].month, rec[0].day, rec[0].hour, 0)
+    start_date = datetime(rec[0].year, rec[0].month, rec[0].day, rec[0].hour, 0) + timedelta(hours = 1) if rec else datetime(2017, 1, 1)
     today = datetime.today()
-    end_date = datetime(today.year, today.month, today.day, 0, 0) - timedelta(days = 1)
+    end_date = datetime(today.year, today.month, today.day, 0, 0) 
     print(start_date, end_date)
   except Exception as e:
     print(e)
@@ -61,7 +66,7 @@ class PowerSines(scrapy.Spider):
     usr, pwd, code = config["emsuser"], config["emspasswd"], config["emscode"]
 
     for did in devices:
-      start_date, end_date = get_dateranges(did)
+      start_date, end_date = get_dateranges(did, config["get_all"])
       print(start_date, end_date)
       if not start_date and not end_date:
         continue
@@ -69,7 +74,6 @@ class PowerSines(scrapy.Spider):
       for timeslice in dateranges:
         dt = {"user" : usr, "password" : pwd, "code" : code, "device" : did, "timestamp" : timeslice}
         frmdata.append(dt)
-        self.log(dt)
     self.log("Found {} combinations".format(len(frmdata)))
     return frmdata
 
@@ -78,6 +82,7 @@ class PowerSines(scrapy.Spider):
     frmdata = self.get_req_list()
     self.log("Request list length = {}".format(len(frmdata)))
     for fd in frmdata:
+      self.log(fd)
       yield scrapy.http.FormRequest(url = url, formdata = fd, headers = {"Content-Type" : "application/x-www-form-urlencoded", "Accept" : "application/json"}, callback = self.parse)
 
   def parse(self, response):
