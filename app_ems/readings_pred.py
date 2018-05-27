@@ -122,7 +122,7 @@ def _group_by_period(df, predict_for, aps):
 
 def get_predictions_chart(site_id, predict_for, agg_period): #, chart_type):
   chart_title_fs = "{} minutes aggregation of {} data with predictions till end of the {}"
-  aps, period, end_of = "15" if agg_period == FIFTEEN_MINUTES else "60", "weekly" if predict_for == WEEK else "daily", "week" if predict_for == WEEK else "day"
+  aps, period, end_of = "60", "weekly" if predict_for == WEEK else "daily", "week" if predict_for == WEEK else "day"
   chart_title = chart_title_fs.format(aps, period, end_of)
   df = _get_existing_readings(site_id) #GET 2 MONTHS DATA AND PREDICT FOR THEM. GROUP BY WEEK LATER. 
   df_pred, dt_end = _predict(site_id, df)

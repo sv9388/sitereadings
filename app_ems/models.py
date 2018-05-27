@@ -10,8 +10,8 @@ from app import db
 
 emsusers_devices = db.Table(
   'emsusers_devices',
-  db.Column('emsuser_id', db.Integer(), db.ForeignKey('emsuser.id')),
-  db.Column('device_id', db.Integer(), db.ForeignKey('device.id'))
+  db.Column('emsuser_id', db.Integer, db.ForeignKey('emsuser.id'), primary_key = True),
+  db.Column('device_id', db.Integer, db.ForeignKey('device.id'), primary_key = True)
 )
 
 class Role(db.Model, RoleMixin):
@@ -76,6 +76,7 @@ class Device(db.Model):
   distributer_name = db.Column(db.String()) #, nullable = False)
   project = db.Column(db.String()) #, nullable = False)
   system_name = db.Column(db.String()) #, nullable = False)
+  device_unique_name = db.Column(db.String(255), nullable = False, unique = True)
   is_active = db.Column(db.Boolean) #, nullable = False)
   country = db.Column(db.String())#, nullable = False)
   tag_site_type = db.Column(db.String()) 
@@ -87,6 +88,14 @@ class Device(db.Model):
   #user = db.relationship('Emsuser', backref = db.backref("devices", cascade="all,delete"), lazy = True)
   users = db.relationship('Emsuser', secondary = emsusers_devices, backref = db.backref('devices', lazy = 'dynamic'))
   __table_args__ = (CheckConstraint('sqm > 0', name='Sq/m must be positive'),)
+
+class AggregatedReading(db.Model):
+  id = db.Column(db.Integer, primary_key = True)
+  dayhour = db.Column(db.DateTime, nullable = False)
+  hourly_kwh = db.Column(db.Float, nullable = False)
+  device_id = db.Column(db.Integer, db.ForeignKey("device.id"))
+  device_assosciated = db.relationship("Device", backref = db.backref('hourly_readings')) #, lazy = 'joined', cascade = "all, delete-orphan"), uselist = False)
+  __table_args__ = (UniqueConstraint('device_id', 'dayhour', name='dev_date_unique'), )
 
 class Reading(db.Model):
   __tablename__ = "reading"

@@ -11,6 +11,7 @@
             <div class="fb-text form-group"><label for="distributer_name" class="fb-text-label">Distributer Name<span class="fb-required">*</span></label><input type="text" class="form-control" name="distributer_name" id="distributer_name" required="required"></div>
             <div class="fb-text form-group"><label for="project" class="fb-text-label">Project<span class="fb-required">*</span></label><input type="text" class="form-control" name="project" id="project" required="required"></div>
             <div class="fb-text form-group"><label for="system_name" class="fb-text-label">System Name<span class="fb-required">*</span></label><input type="text" class="form-control" name="system_name" id="system_name" required="required"></div>
+            <div class="fb-text form-group"><label for="device_unique_name" class="fb-text-label">Device name(Unique)<span class="fb-required">*</span></label><input type="text" class="form-control" name="device_unique_name" id="device_unique_name" required="required"></div>
             <div class="fb-text form-group"><label for="country" class="fb-text-label">Country<span class="fb-required">*</span></label><input type="text" class="form-control" name="country" id="country" required="required"></div>
             <div class="fb-text form-group"><label for="tag_site_type" class="fb-text-label">Tags (Site types)<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_site_type" id="tag_site_type" required="required"></div>
             <div class="fb-text form-group"><label for="tag_size" class="fb-text-label">Tags (Size)<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_size" id="tag_size" required="required"></div>
@@ -60,6 +61,7 @@
             <div class="fb-text form-group"><label for="distributer_name" class="fb-text-label">Distributer Name<span class="fb-required">*</span></label><input type="text" class="form-control" name="distributer_name" id="distributer_name" required="required"></div>
             <div class="fb-text form-group"><label for="project" class="fb-text-label">Project<span class="fb-required">*</span></label><input type="text" class="form-control" name="project" id="project" required="required"></div>
             <div class="fb-text form-group"><label for="system_name" class="fb-text-label">System Name<span class="fb-required">*</span></label><input type="text" class="form-control" name="system_name" id="system_name" required="required"></div>
+            <div class="fb-text form-group"><label for="device_unique_name" class="fb-text-label">Device name(Unique)<span class="fb-required">*</span></label><input type="text" class="form-control" name="device_unique_name" id="device_unique_name" required="required"></div>
             <div class="fb-text form-group"><label for="country" class="fb-text-label">Country<span class="fb-required">*</span></label><input type="text" class="form-control" name="country" id="country" required="required"></div>
             <div class="fb-text form-group"><label for="tag_site_type" class="fb-text-label">Tags (Site types)<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_site_type" id="tag_site_type" required="required"></div>
             <div class="fb-text form-group"><label for="tag_size" class="fb-text-label">Tags (Size)<span class="fb-required">*</span></label><input type="text" class="form-control" name="tag_size" id="tag_size" required="required"></div>
@@ -86,7 +88,7 @@
   <div class="col-12">
     <div class="card-box table-responsive">
       <h4 class="m-t-0 header-title">Devices List</h4>
-      <table id="devicesdt" class="table table-bordered">
+      <table id="devicesdt" class="table table-bordered table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
         <thead>
           <tr>
             <th>id</th>
@@ -94,6 +96,7 @@
             <th>Distributer Name</th>
             <th>Project</th>
             <th>System Name</th>
+            <th>Device name</th>
             <th>Country</th>
             <th>Tags (Site Types)</th>
             <th>Tags (Sizes)</th>
@@ -114,18 +117,19 @@
 <script>
 
 var url_base = "/api/device";
-{% if user.role.id == 1 %}
-  var device_url = "/api/device";
-{% else %}
-  var filters = [{"name":"user_id","op":"==","val":{{user.id | safe}}}];
-  var params = JSON.stringify({"filters":filters});
-  var device_url = "/api/device?q=" + params;
-{% endif %}
+
 $(document).ready(function() {
+
+  {% if user.role.id == 1 %}
+  var device_url = "/api/device";
+  {% elif user.role.id == 2 %}
+  var device_url = "/api/emsuser/{{user.id}}/devices";
+  {% endif %}
+
     var devices_table =  $('#devicesdt').DataTable( {
         "ajax": {url : device_url, dataSrc: "objects"},
         "columns" : [
-          {data: "id", visible: false, searchable: true}, {data: "device_id"}, {data: "distributer_name"}, {data: "project"}, {data: "system_name"}, {data: "country"}, {data: "tag_site_type"}, {data: "tag_size"}, {data: "sqm"}, {data: "latitude"}, {data: "longitude"},  {data: "users[,].email"},
+          {data: "id", visible: false, searchable: true}, {data: "device_id"}, {data: "distributer_name"}, {data: "project"}, {data: "system_name"}, {data: "device_unique_name"}, {data: "country"}, {data: "tag_site_type"}, {data: "tag_size"}, {data: "sqm"}, {data: "latitude"}, {data: "longitude"},  {data: "users[,].email"},
          {
           title: "Actions",
           sortable: false,
@@ -159,7 +163,7 @@ $(document).ready(function() {
 
     var data = jQFormSerializeArrToJson(data)
     console.log(data);
-    var response = post_or_put_data(url_base + "/" + device_id , "PATCH", data);
+    var response = post_or_put_data("/api/device/" + device_id , "PUT", data);
     response = JSON.parse(response.responseText);
     if (response.hasOwnProperty("id")) {
       var table_idx = $(this).attr('tblrowidx');
@@ -178,26 +182,27 @@ $(document).ready(function() {
     var recipient = button.data('deviceid');
     var modal = $(this);
     modal.find('#editdevicebutton').attr('buttondevice_id', recipient);
+
     devices_table = $('#devicesdt').DataTable();
-    var a = devices_table.data();
-    var op = a.map(function(v, i){ if(v.id.toString() == recipient.toString()){return i}}).filter(function(v){ if(v != null){return v; }});
-    if(op.length>=0){
-      var data = a[op[0]];
-      console.log(data, ips);
-      modal.find('#editdevicebutton').attr('tblrowidx', op[0]);
-      var ips = $('#edit_device_form [name]');
-      for (var i = 0; i < ips.length; i++) {
-        if(ips[i].name == "users"){
-          var arr = data['users'].map(v => v.id);
-          ips[i].value = arr.join(",");
-          $(".selectpicker").selectpicker('val', arr); 
-        }
-        else{
-          ips[i].value = data[ips[i].name];
-        }
-      }
-      
-    }
+    var idx = devices_table.column().data().indexOf(Number(recipient));
+    modal.find('#editdevicebutton').attr('tblrowidx', idx);
+
+    var oldData = get_or_delete_data("/api/device/"+recipient, "GET");
+    var form = $("#edit_device_form :input");
+
+    form[0].value = oldData.distributer_name;
+    form[1].value = oldData.project;
+    form[2].value = oldData.system_name;
+    form[3].value = oldData.device_unique_name;
+    form[4].value = oldData.country;
+    form[5].value = oldData.tag_site_type;
+    form[6].value = oldData.tag_size;
+    form[7].value = oldData.sqm;
+    form[8].value = oldData.latitude;
+    form[9].value = oldData.longitude;
+    var arr = oldData['users'].map(v => v.id);
+    form[10].value = arr.join(",");
+    $(".selectpicker").selectpicker('val', arr);
   });
 
   $('#deletedevicebutton').on('click', function(e) {
@@ -205,8 +210,8 @@ $(document).ready(function() {
     var device_id = $(this).attr('buttondevice_id');
     var data = jQFormSerializeArrToJson($("#delete_device_form").serializeArray());
     console.log(data);
-    var response = get_or_delete_data(url_base +"/" + device_id , "DELETE");
-      var table_idx = Number($(this).attr('tblrowidx'));
+    var response = get_or_delete_data("/api/device/" + device_id , "DELETE");
+      var table_idx = Number($(this).attr('tblrowidx')); 
   
       console.log(table_idx, typeof(table_idx));
       devices_table = $('#devicesdt').DataTable();
@@ -243,7 +248,7 @@ $(document).ready(function() {
     data.push({name: "is_active", value: true});
     var data = jQFormSerializeArrToJson(data);
     console.log(data);
-    var response = post_or_put_data(url_base , "POST", data);
+    var response = post_or_put_data("/api/device" , "POST", data);
     response = JSON.parse(response.responseText);
     if (response.hasOwnProperty("id")) {
       devices_table = $('#devicesdt').DataTable();

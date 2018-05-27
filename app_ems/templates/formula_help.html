@@ -1,0 +1,71 @@
+{% extends 'app_layout.html' %}
+{% from '_formhelpers.html' import render_field %}
+{% block pagecontent %}
+<div class="row">
+  <div class="card-box">
+    <div class="row">
+      <div class="col-12">
+        <h4 class="m-t-0 header-title">Custom Formulae Guide</h4>
+        <p class="text-muted m-b-30 font-13">
+          If you are using the app for the first time or have questions about adding formula, use this guide!
+        </p>
+        <h3>Allowed Variables</h3>
+        <p class="text-muted"> The first building block of a formula is its variables.  In this case, the app allows three inbuilt variables and one custom variable uploaded via a CSV file. These are elaborated below
+        </p>
+        <ul>
+          <li><code class="highlighter-rouge">kwh</code>: This is an inbuilt variable which stands for kilowatts per hour consumed by your device.</li>
+          <li><code class="highlighter-rouge">temperature</code>: This is also an variable which means the weather of the device location every hour.</li>
+          <li><code class="highlighter-rouge">sqm</code>: This is an inbuilt variable which symbolises the total area that consumes the energy from a device.</li>
+          <li><code class="highlighter-rouge">customvar</code>: If you have your own values per device that may provide relevant info wrt kilowatts per hour or temperature, use this variable to represent the data. You can populate the values of this <code class="highlighter-rouge">customvar</code> using the CSV file that you upload in the Custom File field.</li>
+        </ul>
+        <div class="clearfix"></div>
+        <h3>Allowed Opertaions</h3>
+        <p class="text-muted"> The next block that completes the formula is its operations. The most common ones (addition, subtraction, multiplication, division and power (both fractions signifying nth root and non-fractions signifying powers are also allowed. To determine the order of operation, we use <a href="https://www.skillsyouneed.com/num/bodmas.html" target = "_blank">BODMAS</a>. More on the operations below:
+        </p>
+        <ul>
+          <li><code class="highlighter-rouge">+-/*</code>: These four are the primitive addition, subtraction, division and multiplication respectively. </li>
+          <li><code class="highlighter-rouge">()</code>: Brackets to improve an operation's priority.</li>
+          <li><code class="highlighter-rouge">power(var, n)</code>: This operation is equivalent to <code class="highlighter-rouge">var raised to the power n</code>. var can be any of the four variables listed in the allowed variables section. n can be any real number. If n is a fraction (say 1/m), it means the mth root of x. So power(kwh, 1/2) implies the square root of kilowatts per hour. power(temp, 5) is equivalent to temp raised to the 5th power.</li>
+          <li><code class="highlighter-rouge">sqrt(var)</code>: This is a shortcut for <code class="highlighter-rouge">power(var, 1/2)</code></li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="card-box">
+    <div class="row">
+      <div class="col-12">
+        <h4 class="m-t-0 header-title">Custom Formulae Checker </h4>
+        <p class="text-muted m-b-30 font-13">
+          Use this tool to check if your formula is correct before getting the charts. Enter the formula, the value of the variables in your formula. You can check the app's output against your own output to confirm if it is valid. 
+        </p>
+        <form method = "POST" >
+         {{ render_field(form.metric_formula) }}
+         {{ render_field(form.kwh) }}
+         {{ render_field(form.temperature) }}
+         {{ render_field(form.sqm) }}
+         {{ render_field(form.customvar) }}
+         {{ render_field(form.computed_value) }}
+         <button type="button" class = "btn btn-success"  onclick = "load_output();">Confirm Formula</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block customscripts %}
+<script>
+function load_output(){
+  var op = {};
+  $("form").serializeArray().forEach((v, i) => op[v.name] = v.name == "metric_formula"?v.value:Number(v.value));
+  var response = post_or_put_data("/api/formula/confirm", "POST", JSON.stringify(op));
+  var op = $.parseJSON(response.responseText);
+  console.log(response, op, op.computed_value);
+  $("form :input[name=computed_value]").val(op.computed_value);
+  if(op.errors.length > 0){ toastr["error"](op.errors); }
+}
+</script>
+{% endblock %}

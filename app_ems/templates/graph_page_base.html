@@ -4,7 +4,7 @@
 {% block pagecontent %}
 <div class = "row">
   <div class = "col-lg-3">
-   <div id="basicTree"></div>
+   <div id="checkTree"></div>
   </div>
   <div class = "col-lg-9">
     {% block graphcontent %}{% endblock %}
@@ -13,9 +13,28 @@
 {% endblock %}
 {% block customscripts %}
 <script>
+$( document ).ready(function() {
+    $('#checkTree').jstree({
+        'core' : {
+            'themes' : {
+                'responsive': false
+            }
+        },
+        'types' : {
+            'default' : {
+                'icon' : 'fa fa-folder'
+            },
+            'file' : {
+                'icon' : 'fa fa-file'
+            }
+        },
+        'plugins' : ['types', 'checkbox']
+    });
+});
+
   var data = get_or_delete_data("/api/devicetree", "GET");
   var openjson = '{"opened":true}';
-  var typejson = '{"type":"file", "id" : "TEst"}';
+  var typejson = '{"type":"file", "selected" : true}';
   var html_tree = "<ul>";
 
   var structured = data["Structured"];
@@ -27,7 +46,7 @@
       html_tree += `<li  data-jstree=${openjson}> ${project} <ul>`;
       for (var system_name in structured[distributer][project]){
         html_tree += `<li  data-jstree=${openjson}> ${system_name} <ul>`;
-        html_tree += structured[distributer][project][system_name].map(v => `<li  data-jstree=${typejson}>${v}</li>`).join("\n");
+        html_tree += structured[distributer][project][system_name].map(device => `<li  data-jstree=${typejson} id="${device.id}">${device.value}</li>`).join("\n");
         html_tree += "</ul></li>";
       }
       html_tree += "</ul></li>";
@@ -42,13 +61,13 @@
     html_tree += `<li  data-jstree=${openjson}> ${tag_type} <ul>`;
     for(var tag in unstructured[tag_type]){
       html_tree += `<li  data-jstree=${openjson}> ${tag} <ul>`;
-      html_tree += unstructured[tag_type][tag].map(v => `<li  data-jstree=${typejson}>${v}</li>`).join("\n");
+      html_tree += unstructured[tag_type][tag].map(device => `<li  data-jstree=${typejson} id="${device.id}">${device.value}</li>`).join("\n");
       html_tree += "</ul></li>";
     }
     html_tree += "</ul></li>";
   }
   html_tree += "</ul>";  
-  $("#basicTree").append(html_tree);
+  $("#checkTree").append(html_tree);
 </script>
 {% block graphscripts %}{% endblock %}
 {% endblock %}

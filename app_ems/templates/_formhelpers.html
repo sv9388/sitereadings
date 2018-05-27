@@ -1,6 +1,6 @@
-{% macro render_field( field, class_str = "form-control", customprops = {}, colsize = 12 ) %}
+{% macro render_field( field, class_str = "form-control", customprops = {}, label_class = "col-2 col-form-label", colsize = 4 ) %}
 <div class="form-group row">
-  {{field.label(class_ = "col-2 col-form-label")}} 
+  {{field.label(class_ = label_class)}} 
   <div class="col-10">
   {{field(class_ = class_str, **customprops) | safe }}
   {% if field.errors %}

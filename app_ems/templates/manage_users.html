@@ -83,7 +83,7 @@
   <div class="col-12">
     <div class="card-box table-responsive">
       <h4 class="m-t-0 header-title">Users List</h4>
-      <table id="emsusersdt" class="table table-bordered">
+      <table id="emsusersdt" class="table table-bordered table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
         <thead>
           <tr>
             <th>id</th>
@@ -125,7 +125,7 @@ $(document).ready(function() {
     var emsuser_id = $(this).attr('buttonemsuser_id');
     var data = jQFormSerializeArrToJson($("#edit_emsuser_form").serializeArray());
     console.log(data);
-    var response = post_or_put_data("/api/emsuser/" + emsuser_id , "PATCH", data);
+    var response = post_or_put_data("/api/emsuser/" + emsuser_id , "PUT", data);
     response = JSON.parse(response.responseText);
     if (response.hasOwnProperty("id")) {
       var table_idx = Number($(this).attr('tblrowidx'));

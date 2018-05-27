@@ -6,9 +6,7 @@ def delta_steps(start, end, agg_period):
   delta = None
   if not start and not end:
     return []
-  if agg_period == FIFTEEN_MINUTES:
-    delta = timedelta(minutes = 15)
-  elif agg_period == HOURLY:
+  if agg_period == HOURLY:
     delta = timedelta(hours = 1)
   else:
     delta = timedelta(days = 1)

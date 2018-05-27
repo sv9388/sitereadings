@@ -58,6 +58,15 @@
               <li>
                 <a href="{{url_for('my_account')}}" class="waves-effect waves-primary"><i class="ti-home"></i><span> My Account </span></a>
               </li>
+              <li class="has_sub">
+                <a href="javascript:void(0);" class="waves-effect waves-primary">
+                  <i class="ti-help"></i><span> Help </span><span class="menu-arrow"></span>
+                </a>
+                <ul class="list-unstyled">
+                  <li><a href="{{url_for('help_formula')}}"> Formulae </a></li>
+                </ul>
+              </li>
+
               {% if user.role.id <= 2 %}
               <li class="menu-title">Admin</li>
               <li>

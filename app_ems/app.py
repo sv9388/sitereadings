@@ -18,11 +18,18 @@ from readings_pred import *
 from enums import *
 from forms import *
 
-@app.errorhandler(500):
+#TODO For prod
+"""@app.errorhandler(500)
 def http500(e):
-  return render_template('http_error.html', error_code = 500, error_detail = 'Internal error. Please contact admin'
+  return render_template('http_error.html', error_code = 500, error_detail = 'Internal error. Please contact admin')
+"""
 
 error_chart = {"chart":{"renderTo":CHART_DIV_ID, "ignoreHiddenSeries" : False}, "title" : {"text" : "Fix errors to populate chart"}, "yAxis":{"labels":{}},"series":[{"data":[]}]}
+
+ALLOWED_EXTENSIONS = set(['csv'])
+
+def allowed_file(filename):
+  return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route("/manage/devices")
 @login_required
@@ -65,11 +72,16 @@ def my_account():
   db.session.commit()
   return render_template('profile.html', form = form, user = load_user(current_user.get_id()), notif = ['success', "Details updated successfully"])
 
+@app.route("/help/formula")
+def help_formula():
+  form = FormulaCheckerForm()
+  return render_template('formula_help.html', form = form, user = load_user(current_user.get_id()))
+
 @app.route("/powersines/compare_sites", methods = ["GET", "POST"])
 @login_required
 def compare_sites():
   form = CustomSitesForm(request.form)
-  metric, sites, date_range, aggperiod, ctype, date_range2 = form.metric.default, form.site_ids.default, form.date_range.default, form.aggregate_unit.default, form.chart_type.default, form.date_range2.default
+  metric_formula, sites, date_range, aggperiod, ctype, date_range2 = form.metric_formula.default, form.site_ids.default, form.date_range.default, form.aggregate_unit.default, form.chart_type.default, form.date_range2.default
   start_date, end_date = [datetime.strptime(x, "%Y-%m-%d") for x in date_range.split(" - ")]
   qtype = QUERY_MTIMERANGES if date_range2 and date_range2.strip() != "" else QUERY_MSITES
   data_type = SITE if (form.tag1.data == "None" and form.tag2.data == "None") else TAG
@@ -80,7 +92,7 @@ def compare_sites():
   tag1 = form.tag1.default
   tag2 = form.tag2.default
   if request.method == "GET":
-    chart, errors = get_chart_data(sites, ctype, start_date, end_date, aggperiod, start_date2, end_date2, tag1, tag2, metric, qtype)
+    chart, errors = get_chart_data(sites, ctype, start_date, end_date, aggperiod, start_date2, end_date2, tag1, tag2, metric_formula, qtype)
     notif = ["warning", errors] if errors and len(errors)>0 else ["success", "Fetched Data"]
     return render_template("compare_sites.html", user = load_user(current_user.get_id()), form = form, chart = chart, notif = notif)
 
@@ -88,20 +100,21 @@ def compare_sites():
     print(form.errors)
     return render_template("compare_sites.html", user = load_user(current_user.get_id()), form = form, chart = error_chart, notif = ["warning", "There were some errors in your choices. Fix them to populate the chart"])
 
-  print(form.site_ids.data, form.chart_type.data, form.date_range.data, form.date_range2.data, form.tag1.data, form.tag2.data, form.metric.data, form.aggregate_unit.data)
+  print(form.site_ids.data, form.chart_type.data, form.date_range.data, form.date_range2.data, form.tag1.data, form.tag2.data, form.metric_formula.data, form.aggregate_unit.data)
   sites = form.site_ids.data
   ctype = form.chart_type.data
   date_range = form.date_range.data
   date_range2 = form.date_range2.data
-  metric = form.metric.data
+  metric_formula = form.metric_formula.data
+  param_file = request.files.get('param_file')
   aggperiod  = form.aggregate_unit.data
   start_date, end_date = [datetime.strptime(x, "%Y-%m-%d") for x in date_range.split(" - ")]
   qtype = QUERY_MTIMERANGES if date_range2 and date_range2.strip() not in ["Invalid date - Invalid date", ""] else QUERY_MSITES
   start_date2, end_date2 = [datetime.strptime(x, "%Y-%m-%d") for x in date_range2.split(" - ")] if qtype == QUERY_MTIMERANGES else [None, None]
   tag1 = form.tag1.data
   tag2 = form.tag2.data
-  print(sites, ctype, date_range, date_range2, tag1, tag2, metric, aggperiod)
-  chart, errors = get_chart_data(sites, ctype, start_date, end_date, aggperiod, start_date2, end_date2, tag1, tag2, metric, qtype, data_type)
+  print(sites, ctype, date_range, date_range2, tag1, tag2, metric_formula, aggperiod)
+  chart, errors = get_chart_data(sites, ctype, start_date, end_date, aggperiod, start_date2, end_date2, tag1, tag2, metric_formula, param_file, qtype, data_type)
   notif = ["warning", errors] if errors and len(errors)>0 else ["success", "Fetched Data"]
   return render_template("compare_sites.html", user = load_user(current_user.get_id()), form = form, chart = chart, notif = notif)
 
