@@ -1,8 +1,0 @@
-CACHE_DIR: data/cache/preprocessed/
-DATA_DIR: data/pod_energy
-METEO_DIR: data/meteo
-METEO_NEAREST_STATION_FILEPATH: data/pod_nearest_weather_station.csv
-METEO_STATION_METHODS: !!python/tuple
-- commune
-- nearest
-POD_INFO_FILEPATH: data/pod_location.csv
