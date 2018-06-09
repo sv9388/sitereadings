@@ -1,0 +1,24 @@
+id,device_id,project,system_name,distributer_name,is_active,country,tag_site_type,tag_size,sqm,latitude,longitude,device_unique_name
+12,130522,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,t,Italy,Restaurant,Medium,2500,45.410174,11.907606,PADOVA
+10,140617,PowerSines srl,Gruppo Cremonini Spa,Chef Express S.p.A,t,Italy,Convenient Stores,Large,3500,45.051992,9.706322,PIACENZA
+9,140619,PowerSines srl,Gruppo Cremonini Spa,Chef Express S.p.A,t,Italy,Convenient Stores,Large,4300,43.835463,11.159631,BISENZIO EST
+7,150181,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,t,Italy,Restaurant,Medium,2500,41.876979,12.474473,ROMA TESTACCIO
+11,150186,PowerSines srl,Gruppo Cremonini Spa,Chef Express S.p.A,t,Italy,Convenient Stores,Large,4600,45.484772,9.202864,MILANO CENTRALE
+1,150233,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,t,Italy,Restaurant,Medium,2000,45.533914,11.506464,VICENZA 
+2,150237,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,t,Italy,Restaurant,Small,910,41.809736,12.300885,ROMA DA VINCI
+3,150239,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,t,Italy,Restaurant,Small,700,45.762729,9.056665,LUISAGO
+13,150270,PowerSines srl,Gruppo Cremonini Spa,Chef Express S.p.A,t,Italy,Convenient Stores,Large,6000,41.900637,12.503831,ROMA TERMINI
+16,150232,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,t,Italy,,,400,45.546107,9.451092,BELLINZAGO
+5,150265,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,f,Italy,Restaurant,Small,820,45.864927,13.431338,VILLESSE
+33,1234,qwe tesst,qwe,qwer,f,qwe,"","",2,2,2,Test Add
+35,999111,Test Device Admin,Addition,Tt,f,Italy,"","",23,2,2,SRH
+34,909990,Test Edit Users,Test Edit Users,Test,f,Italy,"","",20,2,20,CSK
+8,150271,PowerSines srl,Gruppo Cremonini Spa,Chef Express S.p.A,t,Italy,Convenient Stores,Large,5400,44.526899,10.954499,CASTELVETRO SEDE DIREZIONALE
+4,150441,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,t,Italy,Restaurant,Small,750,41.914647,12.386941,ROMA BOCCEA
+18,150109,PowerSines srl,Gruppo Cremonini Spa,Chef Express S.p.A,t,Italy,,,400,44.41673,8.922331,GENOVA PRINCIPE
+19,140593,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,t,Italy,,,400,44.837248,10.338597,PARMA 
+20,130520,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,t,Italy,,,400,44.573752,10.984388,MODENA
+14,150317,PowerSines srl,Gruppo Cremonini Spa,Chef Express S.p.A,t,Italy,Convenient Stores,Large,4500,41.900637,12.503831, ROMA TERMINI 2
+6,150339,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,f,Italy,Restaurant,Small,600,,,ROMA EUR
+15,140268,PowerSines srl,Gruppo Cremonini Spa,Roadhouse Grill Italia S.r.l,f,Italy,Restaurant,Small,500,45.504116,12.234755,MESTERE
+17,130593,PowerSines srl,Gruppo Cremonini Spa,Chef Express S.p.A,f,Italy,,,400,45.502036,9.159502,MILANO BOVISA
